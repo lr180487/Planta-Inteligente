@@ -1,0 +1,887 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Captura de Datos · Servidor · Planta Inteligente</title>
+<style>
+:root{--bg:#f8fbff;--line:#e0eaf6;--text:#17293f;--muted:#5b7186;--blue:#2563eb;--green:#6366f1;--amber:#f59e0b;--red:#ef4444;--radius:12px}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.55}
+header{position:sticky;top:0;z-index:40;background:#fff;border-bottom:1px solid #e3edf9}
+.nav{max-width:1240px;margin:auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:11px;font-weight:900;color:var(--text);text-decoration:none}
+.logo-mark{width:40px;height:40px;border-radius:8px;background:#2563eb;display:grid;place-items:center;color:#fff;font-size:1.2rem}
+.nav nav{display:flex;gap:5px;flex-wrap:wrap}.nav nav a{font-size:.85rem;color:#47617c;font-weight:550;padding:8px 11px;border-radius:7px;text-decoration:none}
+.nav nav a:hover{background:#f2f8ff;color:var(--blue)}.nav nav a.active{background:#eff6ff;color:var(--blue);border:1px solid #d5e7fd}
+.pill{display:inline-flex;align-items:center;gap:7px;font-size:.8rem;font-weight:700;padding:7px 12px;border-radius:6px;border:1px solid #e3edf9;background:#fff}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--green)}
+.wrap{max-width:1240px;margin:auto;padding:26px 20px 60px}
+.kicker{color:#7c8ea3;font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:.68rem}
+h1{font-size:clamp(1.55rem,3.4vw,2.15rem);font-weight:650;letter-spacing:-.02em;line-height:1.15;margin:8px 0 8px}
+.sub{color:#7186a0;font-size:.97rem;max-width:68ch}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 16px;border-radius:8px;font-weight:600;border:1px solid #d5e5f7;background:#fff;color:#24476e;cursor:pointer;text-decoration:none;transition:background .15s,border-color .15s}
+.btn:hover{background:#f2f8ff}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.danger{background:#fff;border-color:#fecdd3;color:#be123c}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+.card{background:#fff;border:1px solid #e0eaf6;border-radius:var(--radius);padding:20px;margin-top:16px}
+.card h2{font-size:1.12rem;font-weight:650;letter-spacing:-.01em;margin-bottom:4px}
+.card h3{font-weight:600;font-size:.95rem;margin-bottom:6px}
+.card p,.card li{color:#7186a0}
+.card ul{padding-left:18px}.card li{margin:6px 0}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
+.kpi{background:#fff;border:1px solid #e0eaf6;border-radius:var(--radius);padding:16px}
+.kpi span{color:#8296ad;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.kpi b{font-size:1.4rem;font-weight:650;display:block;margin:4px 0 2px}
+.kpi small{color:#8296ad}
+.pipeline{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:18px 0}
+.step{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #e0eaf6;border-radius:8px;padding:8px 12px;font-weight:700;font-size:.8rem;color:#3d5a7d}
+.step .ico{font-size:1rem}
+.step.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.ar{color:#b6c6d8;font-weight:700}
+.grid{display:grid;grid-template-columns:1.5fr .95fr;gap:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:0}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.src{display:flex;align-items:center;gap:10px;background:#f8fbff;border:1px solid #e0eaf6;border-radius:10px;padding:11px 13px;margin-bottom:8px}
+.src .ico{font-size:1.2rem}.src b{display:block;font-size:.88rem}.src small{color:#8296ad;font-size:.78rem}
+.metric{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #eef3fa}
+.metric:last-child{border:none}.metric span{color:#8296ad;font-size:.85rem}.metric b{text-align:right;font-weight:650}
+.badge{font-size:.74rem;font-weight:700;padding:4px 9px;border-radius:6px}
+.b-ok{background:#dcfce7;color:#166534}.b-warn{background:#fef3c7;color:#92400e}.b-bad{background:#ffe4e6;color:#9f1239}.b-info{background:#e0f2fe;color:#075985}.b-violet{background:#ede9fe;color:#5b21b6}
+table{width:100%;border-collapse:collapse;font-size:.85rem}th,td{padding:9px 10px;border-bottom:1px solid #eef3fa;text-align:left}th{background:#f4f9ff;color:#3d5a7d;font-size:.72rem;letter-spacing:.06em}td{color:#5b7186}td b{color:#17293f}
+.scrollbox{max-height:300px;overflow:auto;border:1px solid #e0eaf6;border-radius:10px}
+canvas.chart{width:100%;height:260px;display:block;background:#fff;border:1px solid #e0eaf6;border-radius:10px}
+.bar{height:10px;background:#eef3fa;border-radius:99px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;width:0;background:var(--blue);border-radius:99px;transition:width .6s ease}
+.algo{background:#fff;border:1px solid #e0eaf6;border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.algo .head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.algo b{font-size:.95rem;font-weight:650}
+.algo .punto{font-size:.82rem;font-weight:800;color:#3d5a7d}
+.gauge-row{display:flex;justify-content:center;margin:6px 0 2px}
+.gauge-row svg{display:block}
+.gauge-arc{transition:stroke-dasharray .8s cubic-bezier(.32,.72,.28,1),stroke .4s}
+.algo .hint{font-size:.8rem;color:#8296ad;margin-top:4px}
+.chart-h{font-size:.8rem;color:#8296ad;margin:2px 0 8px}
+.vote-row{text-align:center;margin-top:8px}
+.vote{font-size:.74rem;font-weight:800;padding:3px 10px;border-radius:99px}
+.vote.ok{background:#e0e7ff;color:#3730a3}
+.vote.bad{background:#fee2e2;color:#991b1b}
+.vote.none{background:#f1f5f9;color:#64748b}
+input[type=text],input[type=number],input[type=search],select{padding:10px 12px;border:1px solid #d5e5f7;border-radius:8px;background:#fff;color:#17293f;font:inherit;width:100%}
+input:focus,select:focus{outline:2px solid #bfdbfe}
+.captura-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+.captura-grid label{display:block;font-size:.76rem;font-weight:700;color:#8296ad;margin-bottom:4px}
+input[type=number]{width:100%}
+.sev-info{background:#e0f2fe;color:#075985}.sev-media{background:#fef3c7;color:#92400e}.sev-alta{background:#ffe4e6;color:#9f1239}.sev-critica{background:#17293f;color:#fff}
+.toast{position:fixed;right:18px;bottom:18px;z-index:80;background:#0f2237;color:#fff;padding:13px 17px;border-radius:10px;opacity:0;transform:translateY(10px);transition:.3s;max-width:min(420px,90vw);font-size:.9rem;box-shadow:0 8px 24px rgba(23,41,63,.14)}
+.toast.show{opacity:1;transform:none}
+footer{border-top:1px solid #e0eaf6;background:#fff}footer .wrap{padding-top:22px;padding-bottom:30px;color:#7c8ea3;font-size:.85rem}
+#loader{position:fixed;inset:0;z-index:999;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:opacity .55s ease,visibility .55s;font-family:Inter,system-ui,Arial,sans-serif}
+#loader.hide{opacity:0;visibility:hidden}
+#loader .ld-wrap{position:relative;width:104px;height:104px;display:grid;place-items:center}
+#loader .ld-spin{position:absolute;inset:0;border-radius:50%;border:3px solid #eef2f6;border-top-color:#2563eb;animation:ldSpinG .85s linear infinite;pointer-events:none}
+@keyframes ldSpinG{to{transform:rotate(360deg)}}
+#loader .ld-logo{width:68px;height:68px;border-radius:14px;background:linear-gradient(135deg,#2563eb,#1d4ed8);display:grid;place-items:center;font-size:1.9rem;color:#fff;box-shadow:0 10px 24px rgba(37,99,235,.35)}
+#loader .ld-name{font-weight:700;font-size:1.02rem;color:#17293f;letter-spacing:-.01em;margin-top:2px}
+#loader .ld-txt{color:#5b7186;font-size:.9rem;margin-top:-6px}
+#loader .ld-bar-row{display:flex;align-items:center;gap:10px;width:min(230px,64vw);margin-top:4px}
+#loader .ld-bar{flex:1;height:5px;background:#e2e8f0;border-radius:99px;overflow:hidden}
+#loader .ld-bar i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#2563eb,#3b82f6);border-radius:99px}
+#loader .ld-pct{font-weight:700;color:#2563eb;font-size:.88rem;font-variant-numeric:tabular-nums;min-width:38px;text-align:right}
+@media(max-width:950px){.kpis,.grid3{grid-template-columns:repeat(2,1fr)}.grid,.grid2{grid-template-columns:1fr}.captura-grid{grid-template-columns:repeat(2,1fr)}.nav nav{display:none}}
+</style>
+</head><body>
+<div id="loader" title="Clic para saltar">
+  <div class="ld-wrap"><div class="ld-spin" aria-hidden="true"></div><div class="ld-logo">⚙️</div></div>
+  <div class="ld-name">Planta Inteligente</div>
+  <div class="ld-txt">Cargando la captura de datos…</div>
+  <div class="ld-bar-row"><div class="ld-bar"><i id="loadBar"></i></div><span class="ld-pct" id="loadPct">0%</span></div>
+</div>
+<script>(function(){var loader=document.getElementById('loader'),bar=document.getElementById('loadBar'),pct=document.getElementById('loadPct');var t0=Date.now(),D=5000,done=false;function finish(){if(done)return;done=true;loader.classList.add('hide');setTimeout(function(){if(loader.parentNode)loader.parentNode.removeChild(loader);},650);}loader.addEventListener('click',finish);document.addEventListener('keydown',function(e){if(e.key==='Escape')finish();});var t=setInterval(function(){var p=Math.min(100,((Date.now()-t0)/D)*100);if(bar)bar.style.width=p+'%';if(pct)pct.textContent=Math.round(p)+'%';if(p>=100){clearInterval(t);finish();}},120);})();</script>
+<header><div class="nav">
+ <a class="logo" href="landing.html"><span class="logo-mark">⚙️</span><span>Planta Inteligente</span></a>
+ <nav><a href="dashboard.html">📋 Dashboard</a><a href="dashboard.html">🏠 Panel Principal</a><a href="campo.html">🌡️ Monitoreo en Campo</a><a href="automatizacion.html">🏭 Control de Procesos</a><a href="integracion.html">🔀 Comunicación de Datos</a><a href="backend.html" class="active">🗄️ Servidor y Base de Datos</a><a href="ia.html">🤖 Análisis Inteligente</a></nav>
+ <span class="pill"><span class="dot"></span><span class="clock">En línea</span></span>
+</div></header>
+<main class="wrap">
+<div class="kicker">Módulo 04 · Página independiente</div>
+<h1>🗄️ Captura de Datos · el servidor y la persistencia</h1>
+<p class="sub">el servidor recibe las mediciones, las limpia y guarda, y el asistente las analiza. En esta demo todo el historial vive en tu navegador con la misma estructura del servidor real.</p>
+
+<div class="pipeline">
+ <span class="step" data-st="1"><span class="ico">📥</span> CAPTURA DE DATOS</span><span class="ar">→</span>
+ <span class="step" data-st="2"><span class="ico">🧹</span> PREPROCESAMIENTO</span><span class="ar">→</span>
+ <span class="step" data-st="3"><span class="ico">🧠</span> OCSVM · OCNN · Isolation Forest</span><span class="ar">→</span>
+ <span class="step" data-st="4"><span class="ico">🤝</span> FUSIÓN Y VALIDACIÓN</span><span class="ar">→</span>
+ <span class="step" data-st="5"><span class="ico">🚨</span> SISTEMA DE ALERTAS</span>
+</div>
+
+<!-- ===== 1. CAPTURA ===== -->
+<div class="card" id="st1">
+ <h2>📥 1 · CAPTURA DE DATOS</h2>
+ <p>ESP32 · PLC · MQTT · Sensores · SCADA — temperatura, humedad, presión, vibración, corriente, caudal y variables de proceso.</p>
+ <div class="kpis">
+  <div class="kpi"><span>Capturas totales</span><b id="kCapturas">0</b><small>tabla capturas</small></div>
+  <div class="kpi"><span>Fuentes</span><b id="kFuentes">0</b><small>esp32 · plc · mqtt · sensores · scada</small></div>
+  <div class="kpi"><span>Dispositivos</span><b id="kDisp">0</b><small>conectados</small></div>
+  <div class="kpi"><span>Variables</span><b>6</b><small>mediciones por punto</small></div>
+ </div>
+ <div class="grid">
+  <div>
+   <h3>Conectar y capturar</h3>
+   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+    <button class="btn primary" id="btnDemo">📊 Cargar historial de ejemplo</button>
+    <button class="btn" id="btnCapPlc">🔌 Leer PLCs conectados</button>
+   </div>
+   <h3 style="margin-top:14px">Captura desde sensores / SCADA</h3>
+   <div class="captura-grid">
+    <div><label>Temperatura (°C)</label><input type="number" id="capTemp" value="55" step="0.1"></div>
+    <div><label>Humedad (%)</label><input type="number" id="capHum" value="48" step="0.1"></div>
+    <div><label>Presión (bar)</label><input type="number" id="capPres" value="2.4" step="0.01"></div>
+    <div><label>Vibración (mm/s)</label><input type="number" id="capVib" value="0.6" step="0.01"></div>
+    <div><label>Corriente (A)</label><input type="number" id="capCorr" value="12" step="0.1"></div>
+    <div><label>Caudal (L/min)</label><input type="number" id="capCaud" value="40" step="0.1"></div>
+   </div>
+   <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+    <button class="btn primary" id="btnCapSensores">📥 Capturar del sensor</button>
+    <span style="align-self:center;font-size:.82rem;color:#8296ad">fuente: sensores/SCADA</span>
+   </div>
+   <h3 style="margin-top:14px">Mensaje MQTT</h3>
+   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+    <input type="text" id="mqttTopic" value="planta/sensores/scada" placeholder="tema">
+    <input type="text" id="mqttPayload" value="2.4" placeholder="valor o JSON">
+   </div>
+   <div style="display:flex;gap:8px;margin-top:8px"><button class="btn" id="btnMqtt">🔀 Publicar mensaje</button></div>
+  </div>
+  <div>
+   <h3>Fuentes</h3>
+   <div id="fuentesBox"></div>
+   <h3 style="margin-top:12px">Últimas capturas</h3>
+   <div class="scrollbox"><table><thead><tr><th>Hora</th><th>Variable</th><th>Valor</th><th>Fuente</th></tr></thead><tbody id="capTbody"><tr><td colspan="4">Esperando…</td></tr></tbody></table></div>
+  </div>
+ </div>
+</div>
+
+<!-- ===== 2. PREPROCESAMIENTO ===== -->
+<div class="card" id="st2">
+ <h2>🧹 2 · PREPROCESAMIENTO</h2>
+ <p>Pandas · NumPy · normalización — limpieza, valores faltantes, ventanas temporales y extracción de características.</p>
+ <div class="actions" style="margin-top:12px">
+  <select id="varSelect" style="width:auto">
+   <option value="temperatura">Temperatura</option>
+   <option value="humedad">Humedad</option>
+   <option value="presion">Presión</option>
+   <option value="vibracion">Vibración</option>
+   <option value="corriente">Corriente</option>
+   <option value="caudal">Caudal</option>
+  </select>
+  <select id="ventSelect" style="width:auto">
+   <option value="20">Ventana 20 puntos</option>
+   <option value="30" selected>Ventana 30 puntos</option>
+   <option value="60">Ventana 60 puntos</option>
+  </select>
+  <button class="btn primary" id="btnVentana">🔎 Ver ventana actual</button>
+ </div>
+ <div class="grid">
+  <div>
+   <div class="kpis" style="grid-template-columns:repeat(2,1fr);margin-top:0">
+    <div class="kpi"><span>Valores faltantes</span><b id="pFaltantes">—</b><small>interpolados</small></div>
+    <div class="kpi"><span>Ruido recorrido</span><b id="pRuido">—</b><small>promedio de diferencias</small></div>
+    <div class="kpi"><span>Ventanas</span><b id="pVentanas">—</b><small>temporales deslizantes</small></div>
+    <div class="kpi"><span>Normalización</span><b>min-max</b><small>[0, 1]</small></div>
+   </div>
+   <canvas class="chart" id="ventChart"></canvas>
+  </div>
+  <div>
+   <h3>Características de la ventana</h3>
+   <div class="metric"><span>Media</span><b id="cMedia">—</b></div>
+   <div class="metric"><span>Desviación</span><b id="cStd">—</b></div>
+   <div class="metric"><span>Mínimo</span><b id="cMin">—</b></div>
+   <div class="metric"><span>Máximo</span><b id="cMax">—</b></div>
+   <div class="metric"><span>Pendiente</span><b id="cPen">—</b></div>
+   <div class="metric"><span>RMS</span><b id="cRms">—</b></div>
+   <div class="metric"><span>Umbral</span><b id="cUmbral">—</b></div>
+  </div>
+ </div>
+</div>
+
+<!-- ===== 3. ALGORITMOS ===== -->
+<div class="card" id="st3">
+ <h2>🧠 3 · ALGORITMOS DE DETECCIÓN</h2>
+ <p>Tres enfoques que actúan sobre la ventana preprocesada. Cada uno puntaje 0..1: 0 = normal, 1 = anómalo.</p>
+ <div class="actions" style="margin-top:12px">
+  <button class="btn primary" id="btnAnalisis">▶ Ejecutar análisis</button>
+  <span style="align-self:center;font-size:.82rem;color:#8296ad" id="anStatus">Esperando ejecución…</span>
+ </div>
+ <div class="grid3" style="grid-template-columns:repeat(3,1fr)">
+  <div class="algo">
+    <div class="gauge-row"><svg id="gaugeOcsvm" width="130" height="130" viewBox="0 0 130 130"></svg></div>
+    <div class="head"><b>OCSVM</b><span class="punto" id="sOcsvmP">—</span></div>
+    <div class="vote-row"><span class="vote none" id="sOcsvmV">—</span></div>
+    <p class="hint">Fronteras normales · One-Class SVM (RBF) sobre características.</p>
+  </div>
+  <div class="algo">
+    <div class="gauge-row"><svg id="gaugeOcnn" width="130" height="130" viewBox="0 0 130 130"></svg></div>
+    <div class="head"><b>OCNN</b><span class="punto" id="sOcnnP">—</span></div>
+    <div class="vote-row"><span class="vote none" id="sOcnnV">—</span></div>
+    <p class="hint">Patrones complejos · autoencoder convolucional 1D (error de reconstrucción).</p>
+  </div>
+  <div class="algo">
+    <div class="gauge-row"><svg id="gaugeIf" width="130" height="130" viewBox="0 0 130 130"></svg></div>
+    <div class="head"><b>Isolation Forest</b><span class="punto" id="sIfP">—</span></div>
+    <div class="vote-row"><span class="vote none" id="sIfV">—</span></div>
+    <p class="hint">Aislamiento rápido · árboles de aislamiento sobre la ventana.</p>
+  </div>
+ </div>
+ <div class="grid2" style="margin-top:14px">
+  <div class="card" style="padding:16px;margin-top:0">
+   <h3>OCSVM · frontera normal</h3>
+   <p class="chart-h">Espacio (media, desviación) de las últimas 10 ventanas · rojo = fuera de la frontera</p>
+   <canvas class="chart" id="scatterChart"></canvas>
+  </div>
+  <div class="card" style="padding:16px;margin-top:0">
+   <h3>OCNN · reconstrucción</h3>
+   <p class="chart-h">Ventana original vs reconstruida · el área entre ambas es el error</p>
+   <canvas class="chart" id="reconChart"></canvas>
+  </div>
+ </div>
+</div>
+
+<!-- ===== 4. FUSIÓN ===== -->
+<div class="card" id="st4">
+ <h2>🤝 4 · FUSIÓN Y VALIDACIÓN DE RESULTADOS</h2>
+ <p>Consenso · puntuaciones · umbrales — reducción de falsas alarmas y clasificación de severidad.</p>
+ <div class="grid2" style="margin-top:12px">
+  <div>
+   <div class="metric"><span>Puntaje de fusión</span><b id="fPuntaje">—</b></div>
+   <div class="bar"><i id="fBar" style="background:#2563eb"></i></div>
+   <div class="metric" style="margin-top:10px"><span>Votos de los algoritmos</span><b id="fVotos">—</b></div>
+   <div class="metric"><span>Consenso</span><b id="fConsenso">—</b></div>
+   <div class="metric"><span>Falsas alarmas reducidas</span><b id="fFalsas">—</b></div>
+  </div>
+  <div>
+   <div class="metric"><span>Severidad</span><b><span class="badge" id="fSev">—</span></b></div>
+   <div class="metric"><span>Algoritmos que confirmaron</span><b id="fAlgos">—</b></div>
+   <div class="metric"><span>Clasificación</span><b id="fClas">—</b></div>
+   <div class="metric"><span>Alerta creada</span><b id="fAlerta">—</b></div>
+  </div>
+ </div>
+</div>
+
+<!-- ===== 5. ALERTAS ===== -->
+<div class="card" id="st5">
+ <h2>🚨 5 · SISTEMA DE ALERTAS</h2>
+ <p>FastAPI · PostgreSQL · Dashboard — MQTT · notificaciones · historial · auditoría.</p>
+ <div class="kpis" style="grid-template-columns:repeat(5,1fr)">
+  <div class="kpi"><span>Total</span><b id="aTotal">0</b><small>alertas</small></div>
+  <div class="kpi"><span>Activas</span><b id="aActivas">0</b><small>sin leer</small></div>
+  <div class="kpi"><span>Medias</span><b id="aMedia">0</b><small>monitorear</small></div>
+  <div class="kpi"><span>Altas</span><b id="aAlta">0</b><small>intervenir</small></div>
+  <div class="kpi"><span>Críticas</span><b id="aCrit">0</b><small>actuar ya</small></div>
+ </div>
+ <div class="actions" style="margin-top:0">
+  <button class="btn" id="btnSimAlerta">➕ Simular alerta</button>
+  <button class="btn" id="btnRefrescar">↻ Refrescar</button>
+ </div>
+ <div class="scrollbox"><table><thead><tr><th>#</th><th>Hora</th><th>Dispositivo</th><th>Variable</th><th>Severidad</th><th>Valor</th><th>Puntaje</th><th>Votos</th><th>Algoritmos</th><th>Leída</th><th></th></tr></thead><tbody id="alertTbody"><tr><td colspan="11">Esperando…</td></tr></tbody></table></div>
+</div>
+
+<!-- ===== AUDITORÍA ===== -->
+<div class="card" id="stAud">
+ <h2>📋 Auditoría del servidor</h2>
+ <p>Cada captura, detección y alerta deja un registro con fecha y hora (tabla eventos).</p>
+ <div class="scrollbox" style="max-height:200px"><table><thead><tr><th>Hora</th><th>Tipo</th><th>Detalle</th></tr></thead><tbody id="audTbody"><tr><td colspan="3">Esperando…</td></tr></tbody></table></div>
+</div>
+</main>
+<footer><div class="wrap"><b style="color:#17293f">Planta Inteligente</b> · cada opción vive en su propia página · servidor y guardado de datos · el asistente inteligente · gráficos</div></footer>
+<div class="toast" id="toast"></div>
+
+<!-- ===== MENU HAMBURGUESA GLOBAL ===== -->
+<style>
+.hamb-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 15px;border-radius:8px;border:1px solid #2563eb;background:#2563eb;color:#fff;font-weight:700;cursor:pointer;font:inherit;transition:.15s}
+.hamb-btn:hover{background:#1d4ed8}
+.hamb-overlay{position:fixed;inset:0;background:rgba(15,23,42,.42);z-index:200;opacity:0;visibility:hidden;transition:.25s}
+.hamb-overlay.open{opacity:1;visibility:visible}
+.hamb-drawer{position:fixed;top:0;right:0;height:100dvh;width:min(264px,92vw);background:#fff;z-index:201;transform:translateX(105%);transition:transform .3s cubic-bezier(.32,.72,.28,1);box-shadow:-6px 0 24px rgba(23,41,63,.08);display:flex;flex-direction:column;font-family:Inter,system-ui,Arial,sans-serif;color:#0f2237}
+.hamb-drawer.open{transform:none}
+.hamb-head{display:flex;align-items:center;gap:11px;padding:16px 16px 12px;border-bottom:1px solid #eef2f6}
+.hamb-avatar{width:38px;height:38px;border-radius:8px;background:#2563eb;color:#fff;display:grid;place-items:center;font-weight:800;flex:none}
+.hamb-head b{display:block;font-size:.95rem;line-height:1.2}.hamb-head small{color:#64748b;font-size:.72rem}
+.hamb-close{margin-left:auto;width:34px;height:34px;border-radius:8px;border:1px solid #e5eaf0;background:#fff;cursor:pointer;flex:none}
+.hamb-close:hover{background:#fff1f2;color:#9f1239}
+.hamb-search{padding:12px 14px 8px}
+.hamb-search input{width:100%;padding:11px 12px;border:1px solid #e2e8f0;border-radius:10px;font:inherit;background:#fff;color:#0f2237}
+.hamb-search input:focus{outline:2px solid #bfdbfe}
+.hamb-chips{display:flex;gap:6px;padding:2px 14px 10px;border-bottom:1px solid #eef2f6}
+.hchip{border:1px solid #e2e8f0;background:#fff;color:#64748b;padding:6px 11px;border-radius:999px;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer}
+.hchip.on{background:#2563eb;border-color:#2563eb;color:#fff}
+.hamb-body{overflow:auto;padding:4px 10px 14px;flex:1}
+.hamb-group{font-size:.68rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#94a3b8;margin:15px 8px 6px;cursor:pointer}
+.hamb-body a.item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:#0f2237;text-decoration:none;font-weight:600;font-size:.92rem;opacity:0;transform:translateX(10px)}
+.hamb-drawer.open a.item{animation:hIn .28s ease forwards;animation-delay:calc(var(--i,0)*22ms)}
+@keyframes hIn{to{opacity:1;transform:none}}
+.hamb-body a.item:hover{background:#f1f7ff}
+.hamb-body a.item.active{background:#2563eb;color:#fff}
+.hamb-body a.item small{display:block;color:#64748b;font-weight:500;font-size:.74rem}
+.hamb-body a.item.active small{color:#dbeafe}
+.hamb-ico{width:34px;height:34px;border-radius:8px;background:#f1f5f9;display:grid;place-items:center;font-size:1rem;flex:none}
+a.item.active .hamb-ico{background:rgba(255,255,255,.18)}
+.hamb-tag{margin-left:auto;font-size:.64rem;font-weight:800;background:#dcfce7;color:#166534;border-radius:99px;padding:3px 7px;flex:none}
+.hamb-star{margin-left:auto;border:none;background:transparent;cursor:pointer;font-size:.95rem;color:#cbd5e1;padding:4px;flex:none;line-height:1}
+.hamb-star.fav{color:#f59e0b}
+a.item.active .hamb-star{color:#bfdbfe}a.item.active .hamb-star.fav{color:#fbbf24}
+a.item .hamb-tag + .hamb-star{margin-left:0}
+.hamb-empty{display:none;text-align:center;color:#64748b;padding:24px 8px;font-size:.88rem}
+.hamb-foot{display:flex;gap:8px;padding:11px 14px;border-top:1px solid #eef2f6}
+.hamb-foot a{flex:1;text-align:center;padding:10px 6px;border-radius:8px;font-weight:700;font-size:.84rem;text-decoration:none;border:1px solid #e2e8f0;color:#0f2237}
+.hamb-foot a.main{background:#2563eb;color:#fff;border-color:#2563eb}
+.hamb-session{display:flex;justify-content:space-between;padding:0 16px 12px;font-size:.78rem;color:#64748b}
+.hamb-session a{color:#2563eb;font-weight:700;text-decoration:none}
+body.hamb-lock{overflow:hidden}
+</style>
+<div class="hamb-overlay" id="hambOverlay"></div>
+<aside class="hamb-drawer" id="hambDrawer" role="dialog" aria-modal="true" aria-label="Menú principal">
+  <div class="hamb-head"><span class="hamb-avatar" id="hambAvatar">I</span><span><b id="hambUser">Invitado</b><small id="hambRole">Sin sesión iniciada</small></span><button class="hamb-close" id="hambClose" aria-label="Cerrar menú">✕</button></div>
+  <div class="hamb-search"><input type="search" id="hambSearch" placeholder="Buscar…" aria-label="Buscar en el menú"></div>
+  <div class="hamb-chips"><button class="hchip on" data-f="all">Todos</button><button class="hchip" data-f="principal">Principal</button><button class="hchip" data-f="modulos">Módulos</button><button class="hchip" data-f="config">Configuración</button></div>
+  <nav class="hamb-body" id="hambBody">
+    <div id="hambDynamic"></div>
+    <div class="hamb-group" data-g="principal">Principal</div>
+    <a class="item" data-group="principal" href="dashboard.html"><span class="hamb-ico">📋</span><span>Dashboard<small>Centro de control en tiempo real</small></span></a>
+    <div class="hamb-group" data-g="modulos">Módulos</div>
+    <a class="item" data-group="modulos" href="campo.html"><span class="hamb-ico">🌡️</span><span>Monitoreo en Campo<small>Sensores y precisión</small></span></a>
+    <a class="item" data-group="modulos" href="automatizacion.html"><span class="hamb-ico">🏭</span><span>Control de Procesos<small>Control automático seguro</small></span></a>
+    <a class="item" data-group="modulos" href="integracion.html"><span class="hamb-ico">🔀</span><span>Comunicación de Datos<small>Envíos, reintentos y avisos</small></span></a>
+    <a class="item" data-group="modulos" href="backend.html"><span class="hamb-ico">🗄️</span><span>Servidor y Base de Datos<small>Historial guardado</small></span></a>
+    <a class="item" data-group="modulos" href="ia.html"><span class="hamb-ico">🤖</span><span>Análisis Inteligente<small>Respuestas verificadas</small></span></a>
+    <div class="hamb-group" data-g="config">Configuración</div>
+    <a class="item" data-group="config" href="configuracion.html"><span class="hamb-ico">⚙️</span><span>Configuración general<small>Todo en una página</small></span></a>
+    <a class="item" data-group="config" href="configuracion.html#perfil"><span class="hamb-ico">👤</span><span>Perfil<small>Usuario y preferencias</small></span></a>
+    <a class="item" data-group="config" href="configuracion.html#sonidos"><span class="hamb-ico">🔊</span><span>Sonidos y efectos<small>Reverberación y eco</small></span></a>
+    <a class="item" data-group="config" href="configuracion.html#llm"><span class="hamb-ico">🧠</span><span>Asistente con respaldo<small>Servicio principal y respaldo</small></span></a>
+    <div class="hamb-empty" id="hambEmpty">Sin resultados.<br><small>Prueba con otra palabra o el filtro “Todos”.</small></div><div class="hamb-group hamb-group-session" data-g="sesion">Sesión</div><a class="item" data-session="1" href="configuracion.html#administrador"><span class="hamb-ico">👨‍💼</span><span>Administrador<small>Rol y perfil de la cuenta</small></span></a><a class="item hamb-logout" data-session="1" href="login.html?logout=1"><span class="hamb-ico">🚪</span><span>Cerrar sesión<small>Salir de Planta Inteligente</small></span></a>
+  </nav>
+  <div class="hamb-session"><span>Planta Inteligente</span><a href="login.html?logout=1" id="hambSession">Salir</a></div>
+  <div class="hamb-foot"><a class="main" href="dashboard.html">Dashboard</a><a href="configuracion.html">Configuración</a></div>
+</aside>
+<script>
+(function(){
+  var nav=document.querySelector('header .nav');
+  var btn=document.createElement('button'); btn.className='hamb-btn'; btn.id='hambBtn'; btn.setAttribute('aria-expanded','false'); btn.setAttribute('aria-label','Abrir menú');
+  btn.innerHTML='<span>☰</span> Menú';
+  if(nav){ nav.appendChild(btn); } else { btn.style.cssText='position:fixed;top:14px;right:14px;z-index:150'; document.body.appendChild(btn); }
+  var drawer=document.getElementById('hambDrawer'), ov=document.getElementById('hambOverlay'), closeBtn=document.getElementById('hambClose'), lastFocus=null;
+  function open(){ lastFocus=document.activeElement; drawer.classList.add('open'); ov.classList.add('open'); document.body.classList.add('hamb-lock'); btn.setAttribute('aria-expanded','true'); setTimeout(function(){closeBtn.focus()},70); }
+  function close(){ drawer.classList.remove('open'); ov.classList.remove('open'); document.body.classList.remove('hamb-lock'); btn.setAttribute('aria-expanded','false'); if(lastFocus&&lastFocus.focus)lastFocus.focus(); }
+  btn.onclick=open; closeBtn.onclick=close; ov.onclick=close;
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape')close(); });
+  var sx=null; drawer.addEventListener('touchstart',function(e){sx=e.touches[0].clientX},{passive:true});
+  drawer.addEventListener('touchend',function(e){ if(sx!==null&&e.changedTouches[0].clientX-sx>70)close(); sx=null; },{passive:true});
+  var here=(location.pathname.split('/').pop()||'dashboard.html');
+  var links=[].slice.call(drawer.querySelectorAll('a.item'));
+  var favs=[]; try{ favs=JSON.parse(localStorage.getItem('iot_favs')||'[]'); }catch(e){}
+  function saveFavs(){ try{localStorage.setItem('iot_favs',JSON.stringify(favs));}catch(e){} }
+  links.forEach(function(a,i){
+    a.style.setProperty('--i',i);
+    if(a.getAttribute('href')===here){ a.classList.add('active'); var t=document.createElement('span'); t.className='hamb-tag'; t.textContent='Aquí'; a.appendChild(t); }
+    if(a.hasAttribute('data-session')){ a.addEventListener('click',close); return; }
+    var star=document.createElement('button'); star.className='hamb-star'+(favs.indexOf(a.getAttribute('href'))>=0?' fav':''); star.textContent='★'; star.title='Marcar favorito'; star.setAttribute('aria-label','Marcar favorito');
+    star.onclick=function(ev){ ev.preventDefault(); ev.stopPropagation(); var h=a.getAttribute('href'),ix=favs.indexOf(h);
+      if(ix>=0){favs.splice(ix,1);star.classList.remove('fav');}else{favs.push(h);star.classList.add('fav');} saveFavs(); renderDynamic(); };
+    a.appendChild(star); a.addEventListener('click',close);
+  });
+  var LABELS={}; links.forEach(function(a){ LABELS[a.getAttribute('href')]=a; });
+  var recent=[]; try{ recent=JSON.parse(localStorage.getItem('iot_recent')||'[]'); }catch(e){}
+  if(LABELS[here]){ recent=[here].concat(recent.filter(function(h){return h!==here;})); recent=recent.slice(0,5); try{localStorage.setItem('iot_recent',JSON.stringify(recent));}catch(e){} }
+  function renderDynamic(){
+    var box=document.getElementById('hambDynamic'); box.innerHTML='';
+    function section(title,hrefs,excludeHere){
+      hrefs=hrefs.filter(function(h){return LABELS[h]&&(!excludeHere||h!==here);}).slice(0,3);
+      if(!hrefs.length)return;
+      var g=document.createElement('div'); g.className='hamb-group'; g.textContent=title; box.appendChild(g);
+      hrefs.forEach(function(h){ var c=LABELS[h].cloneNode(true); c.classList.remove('active'); var tag=c.querySelector('.hamb-tag'); if(tag)tag.remove(); var st=c.querySelector('.hamb-star'); if(st)st.remove(); c.addEventListener('click',close); box.appendChild(c); });
+    }
+    section('Favoritos',favs,false); section('Recientes',recent,true);
+  }
+  renderDynamic();
+  var search=document.getElementById('hambSearch'), empty=document.getElementById('hambEmpty'), chip='all';
+  function apply(){
+    var q=search.value.trim().toLowerCase(), vis=0;
+    links.forEach(function(a){ var ok=(chip==='all'||a.dataset.group===chip||a.hasAttribute('data-session'))&&(!q||a.textContent.toLowerCase().includes(q)); a.style.display=ok?'':'none'; if(ok)vis++; });
+    drawer.querySelectorAll('.hamb-group[data-g]').forEach(function(g){
+      var n=g.nextElementSibling,any=false;
+      while(n&&n.classList&&!n.classList.contains('hamb-group')){ if(n.tagName==='A'&&n.style.display!=='none')any=true; n=n.nextElementSibling; }
+      g.style.display=any?'':'none';
+    });
+    document.getElementById('hambDynamic').style.display=(chip==='all'&&!q)?'':'none';
+    empty.style.display=vis?'none':'block';
+  }
+  search.addEventListener('input',apply);
+  drawer.querySelectorAll('.hchip').forEach(function(c){ c.onclick=function(){ drawer.querySelectorAll('.hchip').forEach(function(x){x.classList.remove('on')}); c.classList.add('on'); chip=c.dataset.f; apply(); }; });
+  try{
+    var ses=JSON.parse(localStorage.getItem('iot_session')||'null'), prof=JSON.parse(localStorage.getItem('iot_profile')||'null');
+    if(ses){ document.getElementById('hambUser').textContent=(prof&&prof.nombre)||'Administrador'; document.getElementById('hambRole').textContent='Rol: Administrador'; document.getElementById('hambAvatar').textContent=((prof&&prof.nombre)||'A').charAt(0).toUpperCase(); }
+  }catch(e){}
+})();
+</script>
+<!-- ===== FIN MENU HAMBURGUESA ===== -->
+
+<script src="api-sync.js"></script>
+<style id="hamb-fold-all">
+#hambDrawer .hamb-group{cursor:pointer}
+#hambDynamic .hamb-group{display:flex;align-items:center;justify-content:space-between}
+#hambDynamic .hamb-group .chev{font-size:.62rem;color:#9ca3af;transition:transform .22s;margin-left:auto}
+#hambDynamic .hamb-group.closed .chev{transform:rotate(-90deg)}
+</style>
+<script>/*HAMB-TODO-DESPLEGABLE-JS*/
+(function(){
+  var body=document.getElementById('hambBody'); if(!body) return;
+  function preparar(g){
+    if(g.dataset.g || g.dataset.fold) return;
+    g.dataset.fold='1';
+    var chev=document.createElement('span'); chev.className='chev'; chev.textContent='▾'; g.appendChild(chev);
+  }
+  function hermanos(g){
+    var out=[], n=g.nextElementSibling;
+    while(n && !(n.classList && n.classList.contains('hamb-group'))){ out.push(n); n=n.nextElementSibling; }
+    return out;
+  }
+  setInterval(function(){ body.querySelectorAll('.hamb-group').forEach(preparar); }, 700);
+  body.addEventListener('click',function(e){
+    var g=e.target.closest ? e.target.closest('.hamb-group') : null;
+    if(!g || g.dataset.g || !g.dataset.fold) return;
+    var cerrado=g.classList.toggle('closed');
+    hermanos(g).forEach(function(n){ n.style.display=cerrado?'none':''; });
+  });
+})();
+</script>
+
+<style id="diseno-minimalista-final">
+/* ===== Diseño minimalista (capa final) ===== */
+*{box-shadow:none!important}
+body{background:#f8fbff!important;color:#17293f!important;-webkit-font-smoothing:antialiased}
+header{background:#ffffff!important;border-bottom:1px solid #e3edf9!important;backdrop-filter:none!important}
+footer{background:#ffffff!important;border-top:1px solid #e3edf9!important;color:#7c8ea3!important}
+h1{font-size:clamp(1.55rem,3.4vw,2.15rem)!important;font-weight:650!important;letter-spacing:-.02em!important;line-height:1.15!important}
+h2{font-size:1.12rem!important;font-weight:650!important;letter-spacing:-.01em!important}
+h3{font-weight:600!important}
+.kicker{font-size:.68rem!important;letter-spacing:.14em!important;color:#7c8ea3!important;font-weight:700!important}
+.sub{color:#7186a0!important;font-size:.97rem!important;max-width:68ch}
+.card,.kpi,.stat,.step,.algo{
+  background:#ffffff!important;border:1px solid #e0eaf6!important;border-radius:12px!important;
+  box-shadow:none!important;transform:none!important}
+.card:hover,.kpi:hover,.algo:hover{transform:none!important;border-color:#bfdcfb!important}
+.kpi b{font-size:1.35rem!important;font-weight:650!important}
+.kpi span,.metric span{color:#8296ad!important}
+.metric{border-bottom:1px solid #eef3fa!important;padding:9px 0!important}
+.btn{border-radius:8px!important;border:1px solid #d5e5f7!important;background:#ffffff!important;color:#24476e!important;font-weight:600!important;padding:9px 14px!important;transition:background .15s,border-color .15s!important}
+.btn:hover{background:#f2f8ff!important;transform:none!important}
+.btn.primary{background:#2563eb!important;border-color:#2563eb!important;color:#ffffff!important}
+.btn.danger{background:#ffffff!important;border-color:#fecdd3!important;color:#be123c!important}
+.step.on{background:#2563eb!important;border-color:#2563eb!important;color:#fff!important}
+.nav nav a{border-radius:7px!important;padding:7px 10px!important;font-weight:550!important;color:#47617c!important}
+.nav nav a:hover{background:#f2f8ff!important;color:#2563eb!important}
+.nav nav a.active{background:#eff6ff!important;color:#2563eb!important;border:1px solid #d5e7fd!important}
+.logo-mark,.hamb-avatar{border-radius:8px!important;background:#2563eb!important}
+.pill,.badge{border-radius:6px!important;font-weight:600!important;box-shadow:none!important}
+input,select,textarea{border:1px solid #d5e5f7!important;border-radius:8px!important;background:#ffffff!important;box-shadow:none!important}
+input:focus,select:focus,textarea:focus{outline:2px solid #bfdbfe!important;outline-offset:0}
+canvas.chart{background:#ffffff!important;border:1px solid #e0eaf6!important;border-radius:10px!important}
+th{background:#f4f9ff!important;color:#3d5a7d!important;font-size:.72rem!important;letter-spacing:.06em!important}
+td{border-color:#eef3fa!important}
+.scrollbox{border-color:#e0eaf6!important}
+.hamb-drawer{box-shadow:-6px 0 24px rgba(23,41,63,.08)!important}
+.hamb-btn{border-radius:8px!important;box-shadow:none!important}
+.hamb-body a.item{border-radius:8px!important}
+.toast{box-shadow:0 8px 24px rgba(23,41,63,.14)!important;border-radius:10px!important}
+.actions{gap:8px!important}
+.grid3{gap:12px!important}
+@media (max-width:700px){.card,.kpi{padding:16px!important}h1{font-size:1.5rem!important}}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+<script>
+/* ===== PÁGINA CAPTURA DE DATOS ===== */
+(function(){
+  var byId=function(id){return document.getElementById(id);};
+  var $=byId;
+  function toast(m){var t=byId('toast');if(!t)return;t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove('show');},3200);}
+  function now(){return new Date().toLocaleTimeString('es-PE',{hour12:false});}
+  function fmt(n,d){return (d==null?1:d);}
+  function apiOk(fn){return function(){return fn().catch(function(e){toast('No se pudo comunicar con el servidor ('+e.message+')');});};}
+
+  /* --- render helpers --- */
+  function sevClass(s){return {'info':'sev-info','media':'sev-media','alta':'sev-alta','critica':'sev-critica'}[s]||'sev-info';}
+  function sevLabel(s){return {'info':'Info','media':'Media','alta':'Alta','critica':'Crítica'}[s]||s;}
+
+  function renderFuentes(data){
+    var box=byId('fuentesBox'); if(!box)return;
+    var map={esp32:'ESP32',plc:'PLC',mqtt:'MQTT',sensores:'Sensores',scada:'SCADA',demo:'Ejemplo'};
+    var f=data.fuentes||{};
+    box.innerHTML=Object.keys(f).sort(function(a,b){return f[b]-f[a];}).map(function(k){
+      return '<div class="src"><span class="ico">'+(map[k]==='Ejemplo'?'📊':(map[k]==='PLC'?'🔌':(map[k]==='MQTT'?'🔀':(map[k]==='ESP32'?'📡':(map[k]==='Sensores'?'🌡️':(map[k]==='SCADA'?'🏭':'📥'))))))+'</span><span><b>'+(map[k]||k)+'</b><small>'+f[k]+' capturas</small></span></div>';
+    }).join('') || '<div class="src"><span class="ico">📥</span><span><b>Sin datos</b><small>carga el historial de ejemplo</small></span></div>';
+    byId('kCapturas').textContent=data.total||0;
+    byId('kFuentes').textContent=Object.keys(f).length;
+    byId('kDisp').textContent=(data.dispositivos||0)+' · '+(data.conectados||0)+' conectados';
+  }
+
+  function renderCapturas(capturas, variable){
+    var tb=byId('capTbody'); if(!tb)return;
+    if(!capturas||!capturas.length){tb.innerHTML='<tr><td colspan="4">Sin capturas</td></tr>';return;}
+    var varname=variable||'';
+    tb.innerHTML=capturas.slice(-12).reverse().map(function(c){
+      return '<tr><td>'+(c.hora||'').slice(11,19)+'</td><td><b>'+varname+'</b></td><td>'+Number(c.v).toFixed(2)+'</td><td>'+(c.fuente||'')+'</td></tr>';
+    }).join('');
+  }
+
+  function renderVentana(d){
+    var s=d.resumen||{};
+    byId('pFaltantes').textContent=s.faltantes!=null?s.faltantes:'—';
+    byId('pRuido').textContent=s.ruido!=null?Number(s.ruido).toFixed(3):'—';
+    byId('pVentanas').textContent=s.ventanas!=null?s.ventanas:'—';
+    var c=s.caracteristicas||{};
+    byId('cMedia').textContent=c.media!=null?c.media:'—';
+    byId('cStd').textContent=c.desviacion!=null?c.desviacion:'—';
+    byId('cMin').textContent=c.min!=null?c.min:'—';
+    byId('cMax').textContent=c.max!=null?c.max:'—';
+    byId('cPen').textContent=c.pendiente!=null?c.pendiente:'—';
+    byId('cRms').textContent=c.rms!=null?c.rms:'—';
+    byId('cUmbral').textContent=s.umbral!=null?s.umbral:'—';
+    var serie=d.serie||[];
+    var umbral=s.umbral;
+    drawChart(byId('ventChart'), serie, umbral, '#2563eb');
+  }
+
+  function scoreColor(s){return (s||0)<0.4?'#6366f1':((s||0)<0.55?'#f59e0b':'#ef4444');}
+
+  function drawGauge(svgId, score, voted){
+    var svg=byId(svgId); if(!svg)return;
+    var r=52, c=2*Math.PI*r, pct=(score||0)*c;
+    var color=scoreColor(score);
+    var gid=svgId.replace(/[^a-z]/gi,'');
+    svg.innerHTML=
+      '<defs><linearGradient id="grad'+gid+'" x1="0%" y1="0%" x2="100%" y2="0%">'+
+      '<stop offset="0%" stop-color="#2563eb"/><stop offset="100%" stop-color="'+color+'"/></linearGradient></defs>'+
+      '<circle cx="65" cy="65" r="'+r+'" fill="none" stroke="#eef3fa" stroke-width="11"/>'+
+      '<circle class="gauge-arc" cx="65" cy="65" r="'+r+'" fill="none" stroke="url(#grad'+gid+')" stroke-width="11" stroke-linecap="round" '+
+      'stroke-dasharray="0 '+c+'" transform="rotate(-90 65 65)"/>'+
+      '<text x="65" y="62" text-anchor="middle" font-size="26" font-weight="700" fill="#17293f">'+((score||0).toFixed(2))+'</text>'+
+      '<text x="65" y="80" text-anchor="middle" font-size="10" fill="#8296ad">score</text>';
+    var arc=svg.querySelector('.gauge-arc');
+    if(arc){requestAnimationFrame(function(){arc.setAttribute('stroke-dasharray',pct+' '+(c-pct));});}
+    if(voted!==undefined&&voted!==null){
+      var v=byId(svgId.replace('gauge','s')+'V');
+      if(v){v.className='vote '+(voted?'bad':'ok'); v.textContent=voted?'VOTA ANOMALÍA':'VOTA NORMAL';}
+    }
+  }
+
+  function drawScatter(cv, scatter, testPoint, frontera){
+    if(!cv)return;
+    var dpr=window.devicePixelRatio||1, w=cv.clientWidth||320, h=cv.clientHeight||260;
+    cv.width=w*dpr; cv.height=h*dpr;
+    var ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
+    ctx.clearRect(0,0,w,h);
+    if(!scatter||scatter.length<2){ctx.fillStyle='#8296ad';ctx.font='13px system-ui';ctx.fillText('Sin datos (ejecutar análisis)',20,30);return;}
+    var xs=scatter.map(function(p){return p.x;}), ys=scatter.map(function(p){return p.y;});
+    var x0=Math.min.apply(null,xs), x1=Math.max.apply(null,xs);
+    var y0=Math.min.apply(null,ys), y1=Math.max.apply(null,ys);
+    var dx=(x1-x0)||1, dy=(y1-y0)||1;
+    var pad=44;
+    function GX(gx){return pad+gx/(frontera.nx-1)*(w-2*pad);}
+    function GY(gy){return h-pad-gy/(frontera.ny-1)*(h-2*pad);}
+    // --- heatmap de la frontera (regiones normal/anómalo) ---
+    if(frontera&&frontera.d){
+      var d=frontera.d, nx=frontera.nx, ny=frontera.ny;
+      for(var ix=0;ix<nx-1;ix++){
+        for(var iy=0;iy<ny-1;iy++){
+          var davg=(d[ix][iy]+d[ix+1][iy]+d[ix][iy+1]+d[ix+1][iy+1])/4;
+          var al=Math.min(0.32,Math.abs(davg)/2);
+          ctx.fillStyle=davg<0?'rgba(239,68,68,'+al+')':'rgba(99,102,241,'+al+')';
+          ctx.fillRect(GX(ix),GY(iy+1),GX(ix+1)-GX(ix)+1,GY(iy)-GY(iy+1)+1);
+        }
+      }
+      // --- contorno d=0 (marching squares) ---
+      ctx.strokeStyle='rgba(15,34,55,.75)'; ctx.lineWidth=1.6;
+      ctx.beginPath();
+      for(var cx=0;cx<nx-1;cx++){
+        for(var cy=0;cy<ny-1;cy++){
+          var a=d[cx][cy],b=d[cx+1][cy],c=d[cx+1][cy+1],e=d[cx][cy+1];
+          var cross=function(v1,v2){return (v1>=0)!==(v2>=0)?v1/(v1-v2):null;};
+          var tB=cross(a,b), tR=cross(b,c), tT=cross(c,e), tL=cross(e,a);
+          var pts=[];
+          if(tB!==null)pts.push([GX(cx+tB),GY(cy)]);
+          if(tR!==null)pts.push([GX(cx+1),GY(cy+tR)]);
+          if(tT!==null)pts.push([GX(cx+tT),GY(cy+1)]);
+          if(tL!==null)pts.push([GX(cx),GY(cy+tL)]);
+          if(pts.length===2){ctx.moveTo(pts[0][0],pts[0][1]);ctx.lineTo(pts[1][0],pts[1][1]);}
+          else if(pts.length===4){ctx.moveTo(pts[0][0],pts[0][1]);ctx.lineTo(pts[1][0],pts[1][1]);ctx.moveTo(pts[2][0],pts[2][1]);ctx.lineTo(pts[3][0],pts[3][1]);}
+        }
+      }
+      ctx.stroke();
+    }
+    // --- grid + axis labels ---
+    ctx.strokeStyle='rgba(71,111,145,.25)';
+    for(var g=0;g<=4;g++){var gy=pad+g/4*(h-2*pad);ctx.beginPath();ctx.moveTo(pad,gy);ctx.lineTo(w-pad,gy);ctx.stroke();
+      var gx=pad+g/4*(w-2*pad);ctx.beginPath();ctx.moveTo(gx,pad);ctx.lineTo(gx,h-pad);ctx.stroke();}
+    // --- puntos: normales (azul), anómalos (rojo) ---
+    scatter.forEach(function(p,i){
+      var x=pad+(p.x-x0)/dx*(w-2*pad), y=h-pad-(p.y-y0)/dy*(h-2*pad);
+      var an=p.ocsvm;
+      ctx.beginPath();ctx.arc(x,y,7,0,2*Math.PI);
+      ctx.fillStyle=an?'#ef4444':'#6366f1';ctx.fill();
+      ctx.lineWidth=2;ctx.strokeStyle='#fff';ctx.stroke();
+      if(an){ctx.beginPath();ctx.arc(x,y,11,0,2*Math.PI);ctx.strokeStyle='rgba(239,68,68,.45)';ctx.stroke();}
+    });
+    // --- punto testeado: anillo oscuro ---
+    if(testPoint){
+      var x=pad+(testPoint.x-x0)/dx*(w-2*pad), y=h-pad-(testPoint.y-y0)/dy*(h-2*pad);
+      ctx.beginPath();ctx.arc(x,y,12,0,2*Math.PI);
+      ctx.strokeStyle='#0f2237';ctx.lineWidth=2.5;ctx.stroke();
+      ctx.beginPath();ctx.arc(x,y,5,0,2*Math.PI);ctx.fillStyle='#0f2237';ctx.fill();
+    }
+    // --- labels + legend ---
+    ctx.fillStyle='#8296ad';ctx.font='10px system-ui';
+    ctx.fillText('media',w-pad-26,h-pad+14);
+    ctx.save();ctx.translate(14,pad+2);ctx.rotate(-Math.PI/2);ctx.fillText('desviación',0,0);ctx.restore();
+    // legend
+    var lx=w-pad-120;
+    ctx.fillStyle='rgba(99,102,241,.5)';ctx.fillRect(lx,pad+4,12,10);
+    ctx.fillStyle='#8296ad';ctx.fillText('normal',lx+16,pad+13);
+    ctx.fillStyle='rgba(239,68,68,.5)';ctx.fillRect(lx+62,pad+4,12,10);
+    ctx.fillStyle='#8296ad';ctx.fillText('anómalo',lx+78,pad+13);
+    ctx.fillStyle='#0f2237';ctx.beginPath();ctx.arc(lx+124,pad+9,5,0,2*Math.PI);ctx.fill();
+    ctx.fillStyle='#8296ad';ctx.fillText('test',lx+132,pad+13);
+  }
+
+  function drawRecon(cv, recon){
+    if(!cv)return;
+    var dpr=window.devicePixelRatio||1, w=cv.clientWidth||320, h=cv.clientHeight||260;
+    cv.width=w*dpr; cv.height=h*dpr;
+    var ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
+    ctx.clearRect(0,0,w,h);
+    if(!recon||!recon.original||recon.original.length<2){ctx.fillStyle='#8296ad';ctx.font='13px system-ui';ctx.fillText('Sin datos (ejecutar análisis)',20,30);return;}
+    var orig=recon.original, rec=recon.recon;
+    var vals=orig.concat(rec);
+    var mi=Math.min.apply(null,vals), ma=Math.max.apply(null,vals);
+    var rango=(ma-mi)||1, pad=44, n=orig.length;
+    function X(i){return pad+i/(n-1)*(w-2*pad);}
+    function Y(v){return h-pad-(v-mi)/rango*(h-2*pad);}
+    // área de error entre original y recon
+    ctx.beginPath();
+    ctx.moveTo(X(0),Y(orig[0]));
+    for(var i=1;i<n;i++)ctx.lineTo(X(i),Y(orig[i]));
+    for(var j=n-1;j>=0;j--)ctx.lineTo(X(j),Y(rec[j]));
+    ctx.closePath();ctx.fillStyle='rgba(13,148,136,.12)';ctx.fill();
+    // línea recon (violeta)
+    ctx.beginPath();
+    for(var k=0;k<n;k++){var x=X(k),y=Y(rec[k]);if(k)ctx.lineTo(x,y);else ctx.moveTo(x,y);}
+    ctx.strokeStyle='#0d9488';ctx.lineWidth=2.5;ctx.stroke();
+    // línea original (azul)
+    ctx.beginPath();
+    for(var m=0;m<n;m++){var x2=X(m),y2=Y(orig[m]);if(m)ctx.lineTo(x2,y2);else ctx.moveTo(x2,y2);}
+    ctx.strokeStyle='#2563eb';ctx.lineWidth=2.5;ctx.stroke();
+    // labels + legend
+    ctx.fillStyle='#8296ad';ctx.font='10px system-ui';
+    ctx.fillText(mi.toFixed(1),4,h-pad+14);ctx.fillText(ma.toFixed(1),w-pad-24,h-pad+14);
+    ctx.fillStyle='#2563eb';ctx.fillRect(w-pad-96,10,14,3);ctx.fillStyle='#8296ad';ctx.fillText('original',w-pad-79,14);
+    ctx.fillStyle='#0d9488';ctx.fillRect(w-pad-44,10,14,3);ctx.fillStyle='#8296ad';ctx.fillText('reconstruida',w-pad-27,14);
+  }
+
+  function renderAnalysis(d){
+    var sc=d.scores||{};
+    drawGauge('gaugeOcsvm', sc.ocsvm||0, (sc.ocsvm||0)>=0.55); byId('sOcsvmP').textContent=(sc.ocsvm||0).toFixed(2);
+    drawGauge('gaugeOcnn', sc.ocnn||0, (sc.ocnn||0)>=0.55); byId('sOcnnP').textContent=(sc.ocnn||0).toFixed(2);
+    drawGauge('gaugeIf', sc.if||0, (sc.if||0)>=0.55); byId('sIfP').textContent=(sc.if||0).toFixed(2);
+    byId('anStatus').textContent='Análisis completo · '+now();
+    var f=d.fusion||{};
+    byId('fPuntaje').textContent=f.puntaje!=null?f.puntaje:'—';
+    var fbar=byId('fBar'); if(fbar){fbar.style.width=Math.round((f.puntaje||0)*100)+'%'; fbar.style.background=f.consenso?'#ef4444':'#2563eb';}
+    byId('fVotos').textContent=(f.votos_conteo!=null?f.votos_conteo:'—')+'/3';
+    var cons=byId('fConsenso');
+    if(f.consenso){cons.innerHTML='<span class="badge b-bad">Confirmado</span>';}
+    else{cons.innerHTML='<span class="badge b-ok">Rechazado (falsas alarmas reducidas)</span>';}
+    byId('fFalsas').textContent=f.falsas_reducida?'Sí':'No';
+    var sev=byId('fSev');
+    sev.className='badge '+sevClass(f.severidad||'info');
+    sev.textContent=sevLabel(f.severidad||'info');
+    byId('fAlgos').textContent=f.algoritmos||'—';
+    byId('fClas').textContent=f.clasificacion||'—';
+    byId('fAlerta').textContent=d.alerta_id?'Sí (#'+d.alerta_id+')':'No';
+    var serie=d.serie||[];
+    if(serie.length) drawChart(byId('ventChart'), serie, f.umbral, '#2563eb', d.puntos_anomalos||[]);
+    if(d.scatter) drawScatter(byId('scatterChart'), d.scatter, d.scatter[d.scatter.length-1], d.frontera);
+    if(d.reconstruccion) drawRecon(byId('reconChart'), d.reconstruccion);
+    if(d.alerta_id) toast('🚨 Alerta registrada (#'+d.alerta_id+') · '+sevLabel(f.severidad));
+  }
+
+  function renderAlertas(data){
+    var tb=byId('alertTbody'); if(!tb)return;
+    var al=data.alertas||[];
+    if(!al.length){tb.innerHTML='<tr><td colspan="11">Sin alertas</td></tr>';}
+    else{
+      tb.innerHTML=al.map(function(a){
+        return '<tr><td><b>'+a.id+'</b></td><td>'+(a.hora||'').slice(11,19)+'</td><td>'+a.dispositivo+'</td><td>'+a.variable+'</td>'+
+          '<td><span class="badge '+sevClass(a.severidad)+'">'+sevLabel(a.severidad)+'</span></td>'+
+          '<td>'+Number(a.valor).toFixed(2)+'</td><td>'+Number(a.puntaje).toFixed(2)+'</td><td>'+(a.votos||'')+'</td>'+
+          '<td>'+(a.algoritmos||'')+'</td><td>'+(a.leida?'✓':'—')+'</td>'+
+          '<td><button class="btn" data-leer="'+a.id+'"'+(a.leida?' disabled':'')+'>'+(a.leida?'Leída':'Leer')+'</button></td></tr>';
+      }).join('');
+    }
+    var m=data.metricas||{};
+    byId('aTotal').textContent=m.total||0;
+    byId('aActivas').textContent=m.activas||0;
+    byId('aMedia').textContent=(m.por_severidad||{}).media||0;
+    byId('aAlta').textContent=(m.por_severidad||{}).alta||0;
+    byId('aCrit').textContent=(m.por_severidad||{}).critica||0;
+  }
+
+  function renderAuditoria(ev){
+    var tb=byId('audTbody'); if(!tb)return;
+    var e=ev.eventos||[];
+    if(!e.length){tb.innerHTML='<tr><td colspan="3">Sin registros</td></tr>';}
+    else{
+      tb.innerHTML=e.map(function(x){
+        return '<tr><td>'+(x.hora||'').slice(11,19)+'</td><td><b>'+x.tipo+'</b></td><td>'+(x.detalle||'')+'</td></tr>';
+      }).join('');
+    }
+  }
+
+  /* --- chart (HiDPI) --- */
+  function drawChart(cv, data, thr, color, anomolos){
+    if(!cv)return;
+    var dpr=window.devicePixelRatio||1;
+    var w=cv.clientWidth||600, h=cv.clientHeight||260;
+    cv.width=w*dpr; cv.height=h*dpr;
+    var ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
+    ctx.clearRect(0,0,w,h);
+    ctx.strokeStyle='rgba(71,111,145,.22)'; ctx.beginPath();
+    ctx.moveTo(30,8); ctx.lineTo(30,h-26); ctx.lineTo(w-8,h-26); ctx.stroke();
+    if(!data||data.length<2)return;
+    var mi=Math.min.apply(null,data), ma=Math.max.apply(null,data);
+    if(thr!=null){mi=Math.min(mi,thr);ma=Math.max(ma,thr);}
+    var rango=(ma-mi)||1;
+    if(thr!=null){var y=h-26-(thr-mi)/rango*(h-34);ctx.strokeStyle='rgba(239,68,68,.65)';ctx.setLineDash([6,5]);ctx.beginPath();ctx.moveTo(30,y);ctx.lineTo(w-8,y);ctx.stroke();ctx.setLineDash([]);}
+    // área bajo la línea
+    ctx.beginPath();
+    data.forEach(function(v,i){
+      var x=30+i/(data.length-1)*(w-38), y=h-26-(v-mi)/rango*(h-34);
+      if(i)ctx.lineTo(x,y);else ctx.moveTo(x,y);
+    });
+    ctx.lineTo(30+(data.length-1)/(data.length-1)*(w-38),h-26); ctx.lineTo(30,h-26); ctx.closePath();
+    ctx.fillStyle=color+'22'; ctx.fill();
+    // línea
+    ctx.beginPath();
+    data.forEach(function(v,i){
+      var x=30+i/(data.length-1)*(w-38), y=h-26-(v-mi)/rango*(h-34);
+      if(i)ctx.lineTo(x,y);else ctx.moveTo(x,y);
+    });
+    ctx.strokeStyle=color||'#2563eb'; ctx.lineWidth=2.5; ctx.stroke();
+    // marcadores de anomalía
+    if(anomolos&&anomolos.length){
+      anomolos.forEach(function(i){
+        if(i<0||i>=data.length)return;
+        var v=data[i];
+        var x=30+i/(data.length-1)*(w-38), y=h-26-(v-mi)/rango*(h-34);
+        ctx.beginPath();ctx.arc(x,y,7,0,2*Math.PI);
+        ctx.fillStyle='#ef4444';ctx.fill();
+        ctx.lineWidth=2;ctx.strokeStyle='#fff';ctx.stroke();
+        ctx.beginPath();ctx.arc(x,y,11,0,2*Math.PI);
+        ctx.strokeStyle='rgba(239,68,68,.45)';ctx.stroke();
+      });
+    }
+  }
+
+  /* --- carga --- */
+  function cargarFuentes(){
+    return (window.PlantaAPI?window.PlantaAPI.get('/api/captura/fuentes'):Promise.reject({message:'offline'}))
+      .then(renderFuentes).catch(function(){});
+  }
+  function cargarSeries(){
+    var v=byId('varSelect').value;
+    return (window.PlantaAPI?window.PlantaAPI.get('/api/captura/series?variable='+encodeURIComponent(v)+'&limit=120'):Promise.reject({message:'offline'}))
+      .then(function(d){renderCapturas((d.puntos||[]).map(function(p){return {hora:p.hora,fuente:p.fuente,v:p.v};}), d.variable);})
+      .catch(function(){});
+  }
+  function cargarVentana(){
+    var v=byId('varSelect').value, n=byId('ventSelect').value;
+    return (window.PlantaAPI?window.PlantaAPI.get('/api/deteccion/ventana?variable='+encodeURIComponent(v)+'&ventana='+n):Promise.reject({message:'offline'}))
+      .then(function(d){if(d.ok)renderVentana(d);else{toast(d.motivo||'Sin historial');}})
+      .catch(function(){});
+  }
+  function cargarAlertas(){
+    return Promise.all([
+      (window.PlantaAPI?window.PlantaAPI.get('/api/alertas?limit=20'):Promise.reject({message:'offline'})),
+      (window.PlantaAPI?window.PlantaAPI.get('/api/alertas/metricas'):Promise.reject({message:'offline'})),
+      (window.PlantaAPI?window.PlantaAPI.get('/api/eventos?limite=10'):Promise.reject({message:'offline'}))
+    ]).then(function(r){
+      renderAlertas({alertas:r[0].alertas||[], metricas:r[1]});
+      renderAuditoria({eventos:r[2].eventos||[]});
+    }).catch(function(){});
+  }
+
+  /* --- acciones --- */
+  function analisis(){
+    var v=byId('varSelect').value, n=byId('ventSelect').value;
+    byId('anStatus').textContent='Analizando…';
+    return (window.PlantaAPI?window.PlantaAPI.post('/api/deteccion/analizar',{variable:v,ventana:parseInt(n,10)}):Promise.reject({message:'offline'}))
+      .then(function(d){if(d.ok){renderAnalysis(d);cargarAlertas();}else{toast(d.motivo||'No se pudo analizar');byId('anStatus').textContent=d.motivo||'Error';}})
+      .catch(function(e){toast('No se pudo comunicar con el servidor');byId('anStatus').textContent='Error';});
+  }
+  function capturarSensores(){
+    var vars={temperatura:parseFloat(byId('capTemp').value),humedad:parseFloat(byId('capHum').value),presion:parseFloat(byId('capPres').value),vibracion:parseFloat(byId('capVib').value),corriente:parseFloat(byId('capCorr').value),caudal:parseFloat(byId('capCaud').value)};
+    return (window.PlantaAPI?window.PlantaAPI.post('/api/captura/sensores',{dispositivo:'sensor-scada-01',variables:vars}):Promise.reject({message:'offline'}))
+      .then(function(d){toast(d.capturas+' capturas guardadas');return Promise.all([cargarFuentes(),cargarSeries(),cargarVentana()]);})
+      .catch(function(){toast('No se pudo comunicar con el servidor');});
+  }
+  function mqtt(){
+    var topic=byId('mqttTopic').value, payload=byId('mqttPayload').value;
+    return (window.PlantaAPI?window.PlantaAPI.post('/api/captura/mqtt',{topic:topic,payload:payload}):Promise.reject({message:'offline'}))
+      .then(function(d){toast(d.ok?('Mensaje publicado · '+d.capturas+' variables'):d.ayuda);return Promise.all([cargarFuentes(),cargarSeries()]);})
+      .catch(function(){toast('No se pudo comunicar con el servidor');});
+  }
+  function leerAlerta(id){
+    return (window.PlantaAPI?window.PlantaAPI.post('/api/alertas/'+id+'/leer'):Promise.reject({message:'offline'}))
+      .then(function(){toast('Alerta marcada como leída · auditoría registrada');return cargarAlertas();})
+      .catch(function(){toast('No se pudo comunicar con el servidor');});
+  }
+  function simularAlerta(){
+    return (window.PlantaAPI?window.PlantaAPI.post('/api/alertas/simular',{}):Promise.reject({message:'offline'}))
+      .then(function(d){toast('Alerta simulada (#'+(d.alerta&&d.alerta.id)+')');return cargarAlertas();})
+      .catch(function(){toast('No se pudo comunicar con el servidor');});
+  }
+  function leerPlc(){
+    return (window.PlantaAPI?window.PlantaAPI.post('/api/captura/plc'):Promise.reject({message:'offline'}))
+      .then(function(d){toast(d.capturas+' lecturas de PLC guardadas');return Promise.all([cargarFuentes(),cargarSeries()]);})
+      .catch(function(){toast('No se pudo comunicar con el servidor');});
+  }
+  function cargarDemo(){
+    byId('btnDemo').disabled=true;
+    return (window.PlantaAPI?window.PlantaAPI.post('/api/deteccion/series-demo'):Promise.reject({message:'offline'}))
+      .then(function(d){toast(d.puntos+' puntos de ejemplo cargados');return Promise.all([cargarFuentes(),cargarSeries(),cargarVentana()]).then(analisis);})
+      .catch(function(){toast('No se pudo comunicar con el servidor');})
+      .finally(function(){byId('btnDemo').disabled=false;});
+  }
+
+  /* --- wiring --- */
+  function init(){
+    var api=window.PlantaAPI;
+    setInterval(function(){document.querySelectorAll('.clock').forEach(function(e){e.textContent='En línea · '+now();});},1000);
+    byId('btnDemo').onclick=apiOk(cargarDemo);
+    byId('btnAnalisis').onclick=apiOk(analisis);
+    byId('btnVentana').onclick=apiOk(function(){return Promise.all([cargarVentana(),cargarSeries()]);});
+    byId('btnCapSensores').onclick=apiOk(capturarSensores);
+    byId('btnMqtt').onclick=apiOk(mqtt);
+    byId('btnSimAlerta').onclick=apiOk(simularAlerta);
+    byId('btnRefrescar').onclick=apiOk(function(){return Promise.all([cargarFuentes(),cargarSeries(),cargarVentana(),cargarAlertas()]);});
+    byId('btnCapPlc').onclick=apiOk(leerPlc);
+    byId('alertTbody').addEventListener('click',function(e){
+      var b=e.target.closest('[data-leer]'); if(!b)return;
+      var id=b.getAttribute('data-leer'); if(id&&!b.disabled){leerAlerta(id);}
+    });
+    byId('varSelect').onchange=function(){cargarSeries();cargarVentana();};
+    byId('ventSelect').onchange=function(){cargarVentana();};
+    Promise.all([cargarFuentes(),cargarSeries(),cargarVentana(),cargarAlertas()]).then(function(){
+      var st3=document.querySelector('[data-st="3"]'); if(st3)st3.classList.add('on');
+    });
+    setInterval(function(){cargarFuentes();cargarAlertas();},20000);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+</body></html>

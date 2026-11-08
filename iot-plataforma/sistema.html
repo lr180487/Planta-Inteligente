@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planta Inteligente · Sistema IoT Industrial Completo</title>
+<style>
+:root{--bg:#f4f7fb;--card:#ffffff;--line:#dbe5ef;--text:#0f2237;--muted:#5b7186;--blue:#0284c7;--blue2:#2563eb;--green:#059669;--amber:#d97706;--red:#e11d48;--violet:#7c3aed;--cyan-soft:#e0f2fe;--radius:18px;--shadow:0 8px 28px rgba(15,44,74,.06)}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:radial-gradient(900px 500px at 90% -10%,rgba(2,132,199,.10),transparent 60%),var(--bg);color:var(--text);line-height:1.55}
+button,input,select{font:inherit}
+
+/* ============ LOADER 5s ============ */
+#loader{position:fixed;inset:0;z-index:999;background:linear-gradient(180deg,#ffffff,#eef4fb);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;transition:opacity .6s ease,visibility .6s}
+#loader.hide{opacity:0;visibility:hidden}
+.loader-logo-wrap{position:relative;width:170px;height:170px;display:grid;place-items:center}
+.loader-ring{position:absolute;inset:0;border-radius:50%;border:5px solid #dbeafe;border-top-color:var(--blue);border-right-color:var(--violet);animation:spin 1s linear infinite}
+.loader-ring.r2{inset:14px;border-width:3px;border-top-color:transparent;border-bottom-color:var(--green);animation:spinRev 1.6s linear infinite;opacity:.8}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes spinRev{to{transform:rotate(-360deg)}}
+.loader-logo{width:104px;height:104px;border-radius:28px;background:linear-gradient(135deg,var(--blue),var(--blue2) 55%,var(--violet));display:grid;place-items:center;font-size:3rem;color:#fff;box-shadow:0 18px 40px rgba(37,99,235,.35);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+#loader h1{font-size:1.7rem;letter-spacing:-.02em}
+#loader h1 span{background:linear-gradient(90deg,var(--blue),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+#loader p{color:var(--muted);font-size:.95rem;min-height:1.4em}
+.loader-bar{width:min(340px,80vw);height:9px;background:#e2e8f0;border-radius:99px;overflow:hidden}
+.loader-bar i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--blue),var(--green),var(--violet));border-radius:99px;transition:width .2s}
+#loadPct{font-weight:800;color:var(--blue);font-size:1.05rem}
+.loader-steps{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;max-width:520px;padding:0 16px}
+.loader-steps span{font-size:.75rem;font-weight:700;padding:5px 10px;border-radius:99px;background:#fff;border:1px solid var(--line);color:var(--muted);transition:.3s}
+.loader-steps span.on{background:var(--cyan-soft);color:#075985;border-color:#bae6fd}
+.loader-steps span.done{background:#dcfce7;color:#166534;border-color:#bbf7d0}
+
+/* ============ LAYOUT ============ */
+header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav{max-width:1240px;margin:auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:11px;font-weight:900;font-size:1.08rem}
+.logo-mark{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--blue),var(--violet));display:grid;place-items:center;color:#fff;font-size:1.2rem;box-shadow:0 8px 22px rgba(37,99,235,.3)}
+.logo small{display:block;font-weight:600;color:var(--muted);font-size:.72rem}
+.nav nav{display:flex;gap:6px;flex-wrap:wrap}
+.nav nav a{font-size:.86rem;color:var(--muted);font-weight:600;padding:8px 12px;border-radius:99px}
+.nav nav a:hover{background:#eaf2fd;color:var(--blue)}
+.pill{display:inline-flex;align-items:center;gap:7px;font-size:.8rem;font-weight:700;padding:7px 12px;border-radius:99px;border:1px solid var(--line);background:#fff}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(5,150,105,.15);animation:blink 1.6s infinite}
+@keyframes blink{50%{opacity:.45}}
+.wrap{max-width:1240px;margin:auto;padding:26px 20px 60px}
+.hero h1{font-size:clamp(1.9rem,4.5vw,3.1rem);line-height:1.08;letter-spacing:-.03em}
+.grad{background:linear-gradient(90deg,var(--blue),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);max-width:820px;margin-top:10px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 16px;border-radius:999px;font-weight:700;border:1px solid var(--line);background:#fff;color:var(--text);cursor:pointer;box-shadow:0 2px 10px rgba(15,44,74,.05);transition:.15s}
+.btn:hover{transform:translateY(-1px)} .btn.primary{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;border:none}
+.btn.danger{background:#fff1f2;border-color:#fecdd3;color:#9f1239}.btn.danger.on{background:var(--red);color:#fff}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 22px}
+.pipeline{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:8px 0 6px}
+.step{background:#fff;border:1px solid var(--line);border-radius:15px;padding:13px 8px;text-align:center;font-size:.82rem;font-weight:700;box-shadow:var(--shadow);position:relative}
+.step small{display:block;color:var(--muted);font-weight:600;font-size:.7rem;margin-top:3px}
+.step .st{position:absolute;top:7px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--green)}
+.step.warn .st{background:var(--amber)} .step.bad .st{background:var(--red)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.kpi span{color:var(--muted);font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.kpi b{font-size:1.9rem;display:block;margin:4px 0 2px;letter-spacing:-.02em}
+.kpi small{color:var(--muted)} .kpi.alert{border-color:#fda4af;background:#fff7f8}
+.grid{display:grid;grid-template-columns:1.55fr .95fr;gap:18px;margin-top:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+.card h2{font-size:1.15rem;margin-bottom:6px}.card h3{font-size:1.02rem;margin-bottom:8px}
+.card p,.card li{color:var(--muted)} .card ul{padding-left:18px}.card li{margin:6px 0}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+canvas.chart{width:100%;height:300px;display:block;background:#f8fbff;border:1px solid var(--line);border-radius:14px}
+.tabs{display:flex;gap:7px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:#fff;color:var(--muted);padding:7px 12px;border-radius:99px;cursor:pointer;font-weight:700;font-size:.82rem}
+.tab.active{background:var(--blue);color:#fff;border-color:transparent}
+.metric{display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+.metric:last-child{border:none}.metric span{color:var(--muted)}.metric b{text-align:right}
+.badge{font-size:.74rem;font-weight:800;padding:4px 9px;border-radius:99px}
+.b-ok{background:#dcfce7;color:#166534}.b-warn{background:#fef3c7;color:#92400e}.b-bad{background:#ffe4e6;color:#9f1239}.b-info{background:#e0f2fe;color:#075985}.b-violet{background:#ede9fe;color:#5b21b6}
+.alarmbox{margin-top:14px;padding:13px 14px;border-radius:13px;background:#fffbeb;border:1px solid #fde68a;color:#92400e;font-size:.9rem}
+.alarmbox.bad{background:#fff1f2;border-color:#fda4af;color:#9f1239}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th,td{padding:10px 11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:#e8f2fd;color:#0c4a6e} td{color:var(--muted)} td b{color:var(--text)}
+.scrollbox{max-height:300px;overflow:auto;border:1px solid var(--line);border-radius:13px}
+.log{font-family:Consolas,Menlo,monospace;font-size:.78rem;background:#0f2237;color:#dbeafe;border-radius:13px;padding:15px;height:248px;overflow:auto;line-height:1.65}
+.log .t{color:#7dd3fc}.log .ok{color:#86efac}.log .warn{color:#fde68a}.log .err{color:#fda4af}
+pre{background:#0f2237;color:#e6f0fa;padding:16px;border-radius:13px;overflow:auto;font-size:.8rem;line-height:1.55;max-height:360px}
+.switch{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.switch:last-child{border:none}
+.sw{width:52px;height:29px;border-radius:99px;background:#cbd5e1;border:none;cursor:pointer;position:relative;flex:none;transition:.2s}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:23px;height:23px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.sw.on{background:var(--green)} .sw.on::after{left:26px}
+input[type=range]{width:100%;accent-color:var(--blue)}
+input[type=text]{flex:1;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--text);min-width:200px}
+.agent{display:flex;gap:12px;padding:12px;border:1px solid var(--line);border-radius:13px;margin:9px 0;background:#f8fbff}
+.agent .ico{font-size:1.4rem}.agent b{display:block}.agent p{font-size:.88rem}
+.agent.active{border-color:#7dd3fc;background:#f0f9ff}.agent.done{border-color:#bbf7d0;background:#f7fef9}
+.chat{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.msg{padding:12px 14px;border-radius:14px;font-size:.92rem;max-width:92%}
+.msg.user{align-self:flex-end;background:#e0f2fe;color:#0c4a6e}
+.msg.ia{align-self:flex-start;background:#f1f5f9;color:var(--text);border:1px solid var(--line)}
+section{margin-top:42px} .sec-head{margin-bottom:16px}.sec-head h2{font-size:clamp(1.5rem,3vw,2.1rem);letter-spacing:-.02em}
+.kicker{color:var(--blue);font-weight:800;letter-spacing:.13em;text-transform:uppercase;font-size:.75rem}
+footer{border-top:1px solid var(--line);background:#fff;margin-top:50px}
+footer .wrap{padding-top:26px;padding-bottom:34px;color:var(--muted)}
+.toast{position:fixed;right:18px;bottom:18px;z-index:80;background:#0f2237;color:#fff;padding:13px 17px;border-radius:13px;box-shadow:0 16px 40px rgba(0,0,0,.25);opacity:0;transform:translateY(10px);transition:.3s;max-width:min(420px,90vw);font-size:.9rem}
+.toast.show{opacity:1;transform:none}
+@media(max-width:950px){.kpis{grid-template-columns:repeat(2,1fr)}.grid,.grid3{grid-template-columns:1fr}.pipeline{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<!-- ===== LOADER 5 SEGUNDOS ===== -->
+<div id="loader" role="status" aria-label="Cargando sistema">
+ <div class="loader-logo-wrap">
+ <div class="loader-ring"></div><div class="loader-ring r2"></div>
+ <div class="loader-logo">⚙️</div>
+ </div>
+ <h1>Planta Inteligente</h1>
+ <p id="loadMsg">Iniciando sistema…</p>
+ <div class="loader-bar"><i id="loadBar"></i></div>
+ <div id="loadPct">0%</div>
+ <div class="loader-steps" id="loadSteps">
+ <span>🌡️ Sensores </span><span>🏭 el control automático</span><span>🔀 el sistema de envío</span><span>🗄️ Backend</span><span>🤖 Agentes IA</span><span>📊 Interfaz</span>
+ </div>
+</div>
+
+<header>
+ <div class="nav">
+ <div class="logo"><span class="logo-mark">⚙️</span><span>Planta Inteligente<small>Sistema IoT Industrial</small></span></span></div>
+ <nav>
+ <a href="#panel">Panel</a><a href="#campo">Campo</a><a href="#plc">control automático</a><a href="#integracion">el sistema de envío</a><a href="#backend">Backend</a><a href="#ia">IA</a>
+ </nav>
+ <span class="pill"><span class="dot"></span><span id="clock">Sistema en línea</span></span>
+ </div>
+</header>
+
+<main class="wrap">
+ <div class="hero">
+ <span class="pill">● Sistema completo funcional · Simulación operativa en el navegador</span>
+ <h1 style="margin-top:16px">Del sensor en campo a la <span class="grad">inteligencia artificial</span>.</h1>
+ <p>Panel profesional en modo claro que integra las 6 capas: adquisición calibrada, control el control automático por comunicación interna, integración el sistema de envío con reintentos y alarmas, backend el servidor + el guardado de datos, agentes el asistente inteligente verificados y visualización web en tiempo real.</p>
+ <div class="actions">
+ <button class="btn primary" id="btnToggle">⏸ Pausar adquisición</button>
+ <button class="btn" id="btnSpike">⚠ Forzar pico térmico</button>
+ <button class="btn" id="btnExport">⬇ Exportar archivo de tabla</button>
+ <button class="btn danger" id="btnEmergency">🛑 Parada de emergencia</button>
+ </div>
+ </div>
+
+ <div class="pipeline" id="pipeline">
+ <div class="step" data-step>🌡️ Campo e IoT<span class="st"></span><small> · <span data-lat>12</span> ms</small></div>
+ <div class="step" data-step>🏭 Automatización<span class="st"></span><small>el control automático · <span data-lat>8</span> ms</small></div>
+ <div class="step" data-step>🔀 Integración IoT<span class="st"></span><small>el sistema de envío · <span data-lat>21</span> ms</small></div>
+ <div class="step" data-step>🗄️ Backend<span class="st"></span><small>el servidor · <span data-lat>18</span> ms</small></div>
+ <div class="step" data-step>🤖 Inteligencia Artificial<span class="st"></span><small>el asistente inteligente · <span data-lat>240</span> ms</small></div>
+ <div class="step" data-step>📊 Presentación<span class="st"></span><small>Web · <span data-lat>5</span> ms</small></div>
+ </div>
+
+ <!-- PANEL -->
+ <section id="panel">
+ <div class="kpis">
+ <div class="kpi" id="kpiTempCard"><span>Temperatura</span><b id="kTemp">—</b><small>Sensor · tanque 01</small></div>
+ <div class="kpi"><span>Humedad</span><b id="kHum">—</b><small>Ambiente de planta</small></div>
+ <div class="kpi"><span>Nivel del tanque</span><b id="kLevel">—</b><small>Control control automático por histéresis</small></div>
+ <div class="kpi"><span>Alarmas activas</span><b id="kAlarms">0</b><small id="kAlarmSub">Sin eventos críticos</small></div>
+ </div>
+
+ <div class="grid">
+ <div class="card">
+ <div class="card-head"><h2>📈 Tiempo real</h2>
+ <div class="tabs">
+ <button class="tab active" data-var="temp">Temperatura</button>
+ <button class="tab" data-var="hum">Humedad</button>
+ <button class="tab" data-var="level">Nivel</button>
+ </div>
+ </div>
+ <canvas class="chart" id="chart" width="720" height="300"></canvas>
+ <div class="alarmbox" id="alarmBox">✅ Sistema normal · Umbral térmico: 80 °C · Enfriamiento control automático por encima del umbral.</div>
+ </div>
+ <div class="card">
+ <h2>Estado del proceso</h2>
+ <div class="metric"><span>Temperatura actual</span><b id="mTemp">—</b></div>
+ <div class="metric"><span>Promedio (ventana)</span><b id="mAvg">—</b></div>
+ <div class="metric"><span>Máximo registrado</span><b id="mMax">—</b></div>
+ <div class="metric"><span>Bomba / enfriamiento</span><b id="mPump"><span class="badge b-ok">APAGADA</span></b></div>
+ <div class="metric"><span>Modo control automático</span><b id="mMode">Automático</b></div>
+ <div class="metric"><span>Lecturas almacenadas</span><b id="mCount">0</b></div>
+ <div class="metric"><span>Reintentos el sistema de envío</span><b id="mRetries">0</b></div>
+ <div class="metric"><span>Calidad del dato</span><b><span class="badge b-ok" id="mQuality">BUENA</span></b></div>
+ </div>
+ </div>
+ </section>
+
+ <!-- CAMPO + control automático -->
+ <div class="grid">
+ <section id="campo" style="margin-top:18px">
+ <div class="card">
+ <div class="sec-head"><div class="kicker">Módulo 01</div><h2>🌡️ Campo e IoT — </h2><p>Adquisición, filtrado de mediana y calibración de dos puntos en el borde.</p></div>
+ <label style="font-weight:700;font-size:.9rem">Corrección de calibración (offset): <span id="calVal">0.0 °C</span></label>
+ <input type="range" id="calRange" min="-5" max="5" step="0.1" value="0">
+ <div class="metric"><span>Dispositivo</span><b>sensor-tanque-01</b></div>
+ <div class="metric"><span>Programa interno</span><b>v2.4.1 · supervisión automática activo</b></div>
+ <div class="metric"><span>Última trama</span><b id="lastFrame">—</b></div>
+ <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:13px;padding:15px;color:#0c4a6e">✅ <b>Beneficio:</b> información clara, segura y siempre disponible para decidir a tiempo.</div>
+ </div>
+ </section>
+
+ <section id="plc" style="margin-top:18px">
+ <div class="card">
+ <div class="sec-head"><div class="kicker">Módulo 02</div><h2>🏭 Automatización — el control automático</h2><p>comunicación interna · mapa de registros en vivo. La seguridad vive en el control automático, no en la web.</p></div>
+ <div class="switch"><span><b>Modo automático</b><br><small style="color:var(--muted)">Histéresis: bomba ON &gt; 80 °C · OFF &lt; 74 °C</small></span><button class="sw on" id="swAuto" aria-label="Modo automático"></button></div>
+ <div class="switch"><span><b>Bomba manual</b><br><small style="color:var(--muted)">Solo disponible en modo manual</small></span><button class="sw" id="swPump" aria-label="Bomba manual"></button></div>
+ <div class="metric"><span>Registro comunicación 40001 · Nivel ×100</span><b id="regLevel">—</b></div>
+ <div class="metric"><span>Bomba</span><b id="regPump">0</b></div>
+ <div class="metric"><span>Alarma importante</span><b id="regAlarm">0</b></div>
+ <div class="metric"><span>Revisión del control</span><b>Constante · estable</b></div>
+ </div>
+ </section>
+ </div>
+
+ <!-- NODE-RED + LOG -->
+ <section id="integracion">
+ <div class="sec-head"><div class="kicker">Módulo 03</div><h2>🔀 Integración IoT — el sistema de envío</h2><p>Transformación, validación, reintentos con backoff y alarmas. Registro de eventos del flujo:</p></div>
+ <div class="grid">
+ <div class="log" id="log"></div>
+ <div class="card"><h3>Reglas activas</h3>
+ <ul>
+ <li><b>Transformar:</b> normaliza unidades, timestamps ISO-8601 y calidad.</li>
+ <li><b>Reintentar:</b> hasta 3 intentos (1 s → 2 s → 4 s) si el backend no responde — simulado aleatoriamente.</li>
+ <li><b>Alarmar:</b> temperatura &gt; 80 °C sostenida genera evento crítico deduplicado.</li>
+ <li><b>Deadband:</b> evita tormentas de alarmas por oscilaciones en el umbral.</li>
+ </ul>
+ <div class="metric"><span>Mensajes procesados</span><b id="nrOk">0</b></div>
+ <div class="metric"><span>Reintentos ejecutados</span><b id="nrRetry">0</b></div>
+ <div class="metric"><span>Última latencia total</span><b id="nrLat">—</b></div>
+ </div>
+ </div>
+ </section>
+
+ <!-- BACKEND -->
+ <section id="backend">
+ <div class="sec-head"><div class="kicker">Módulo 04</div><h2>🗄️ Backend y persistencia — el servidor + el guardado de datos</h2><p>Últimas lecturas validadas por la revisión automática y almacenadas (en esta demo, en memoria del navegador con la misma estructura de la servicio).</p></div>
+ <div class="card">
+ <div class="card-head"><h3>POST /api/v1/readings · GET /api/v1/readings/latest</h3><span class="badge b-ok">servicio 200 OK</span></div>
+ <div class="scrollbox"><table><thead><tr><th>#</th><th>Timestamp</th><th>Dispositivo</th><th>Temperatura</th><th>Humedad</th><th>Nivel</th><th>Calidad</th></tr></thead><tbody id="readingsBody"><tr><td colspan="7">Esperando lecturas…</td></tr></tbody></table></div>
+ <div class="actions" style="margin-bottom:0"><button class="btn" id="btnClear">🗑 Limpiar historial</button></div>
+ </div>
+ </section>
+
+ <!-- IA -->
+ <section id="ia">
+ <div class="sec-head"><div class="kicker">Módulo 05</div><h2>🤖 Inteligencia artificial — el asistente inteligente</h2><p>Pregunta sobre el proceso. Verás trabajar a cada agente y la verificación final de cifras.</p></div>
+ <div class="grid">
+ <div class="card">
+ <div class="agent" id="ag-analyzer"><span class="ico">🔍</span><div><b>Analyzer</b><p>Interpreta intención, variable y rango temporal.</p></div></div>
+ <div class="agent" id="ag-processor"><span class="ico">🧮</span><div><b>Processor</b><p>Consulta el guardado de datos y calcula estadísticas reales.</p></div></div>
+ <div class="agent" id="ag-responder"><span class="ico">✍️</span><div><b>Responder</b><p>Redacta la respuesta con contexto y recomendación.</p></div></div>
+ <div class="agent" id="ag-verifier"><span class="ico">✅</span><div><b>Verifier</b><p>Contrasta cada cifra contra los datos antes de entregar.</p></div></div>
+ </div>
+ <div class="card">
+ <h3>Asistente del proceso</h3>
+ <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">
+ <button class="btn qbtn">¿Cómo está la temperatura?</button>
+ <button class="btn qbtn">¿Hubo alguna alarma?</button>
+ <button class="btn qbtn">Dame un resumen del proceso</button>
+ </div>
+ <div style="display:flex;gap:8px;flex-wrap:wrap"><input type="text" id="chatInput" placeholder="Ej.: ¿Cuál fue la temperatura máxima?"><button class="btn primary" id="btnAsk">Preguntar</button></div>
+ <div class="chat" id="chat"><div class="msg ia">Hola. Estoy conectado a los datos en vivo del sistema. Pregúntame por temperatura, alarmas o un resumen del proceso.</div></div>
+ </div>
+ </div>
+ </section>
+
+ <!-- PRESENTACION -->
+ <section id="presentacion">
+ <div class="sec-head"><div class="kicker">Módulo 06</div><h2>📊 Presentación</h2><p>Esta interfaz es el módulo 6 en funcionamiento: página web + interactividad + diseño tipo Tailwind + gráficos en canvas (equivalente a gráficos) en modo claro profesional.</p></div>
+ <div class="grid3">
+ <div class="card"><h3>⏱ Tiempo real</h3><p>Gráficos vivos, KPIs y semáforos de estado por capa sin recargar la página.</p></div>
+ <div class="card"><h3>🧭 Operable</h3><p>Modo automático/manual, calibración, parada de emergencia y exportación archivo de tabla desde el panel.</p></div>
+ <div class="card"><h3>🛡 Resiliente por diseño</h3><p>Si falla la web o la IA, el control automático sigue controlando; si falla el backend, el sistema de envío reintenta.</p></div>
+ </div>
+ </section>
+</main>
+
+<footer><div class="wrap"><b style="color:var(--text)">Planta Inteligente</b> · Sistema completo funcional (simulación operativa en navegador) · · el control automático · comunicación interna · el sistema de envío · el servidor · el guardado de datos · el asistente inteligente · · gráficos<br><small>En producción, cada módulo se despliega como servicio real; esta demo reproduce su comportamiento e interfaces.</small></div></footer>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= LOADER 5 SEGUNDOS ================= */
+(function(){
+ const msgs=["Iniciando sistema…","Conectando sensores …","Sincronizando el control automático por comunicación interna…","Cargando flujos de el sistema de envío…","Conectando el servidor y el guardado de datos…","Preparando agentes el asistente inteligente…","Renderizando interfaz profesional…"];
+ const steps=[...document.querySelectorAll('#loadSteps span')];
+ const start=Date.now(), DURATION=5000;
+ function tick(){
+ const el=Math.min(Date.now()-start,DURATION), pct=Math.floor(el/DURATION*100);
+ loadBar.style.width=pct+'%'; loadPct.textContent=pct+'%';
+ loadMsg.textContent=msgs[Math.min(Math.floor(el/DURATION*msgs.length),msgs.length-1)];
+ steps.forEach((s,i)=>{const th=(i+1)/steps.length*100; s.className = pct>=th?'done':(pct>=th-16?'on':'');});
+ if(el<DURATION) requestAnimationFrame(tick);
+ else setTimeout(()=>{loader.classList.add('hide'); toast('✅ Sistema cargado en 5 s · Las 6 capas están en línea'); log('ok','Sistema iniciado · 6/6 capas en línea');},250);
+ }
+ tick();
+})();
+
+/* ================= ESTADO / SIMULACIÓN ================= */
+const $=id=>document.getElementById(id);
+const S={running:true,emergency:false,auto:true,manualPump:false,spike:0,t:0,
+ temp:52,hum:48,level:62,pump:false,alarm:false,cal:0,
+ series:{temp:[],hum:[],level:[]},activeVar:'temp',readings:[],logs:[],
+ max:-Infinity,retries:0,nrOk:0,alarmEvents:0,lastAlarmAt:0};
+const LIMITS={temp:{max:110,thr:80,label:'Temperatura °C',color:'#0284c7'},hum:{max:100,thr:null,label:'Humedad %',color:'#059669'},level:{max:100,thr:null,label:'Nivel %',color:'#7c3aed'}};
+
+function now(){return new Date().toLocaleTimeString('es-PE',{hour12:false})}
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),3400)}
+function log(type,msg){
+ const el=$('log'); const div=document.createElement('div');
+ div.innerHTML=`<span class="t">[${now()}]</span> <span class="${type}">●</span> ${msg}`;
+ el.appendChild(div); el.scrollTop=el.scrollHeight;
+ while(el.children.length>90) el.removeChild(el.firstChild);
+}
+function fmt(n,d=1){return n.toFixed(d)}
+
+function tick(){
+ if(!S.running) return;
+ S.t++;
+ // --- 1. CAMPO / ---
+ let raw=52+Math.sin(S.t/9)*9+Math.sin(S.t/3.7)*3+(Math.random()*3-1.5);
+ if(S.spike>0){raw+=27;S.spike--}
+ if(S.emergency) raw=Math.max(24,raw-2.2); // proceso deteniéndose
+ S.temp=raw+S.cal;
+ S.hum=Math.max(20,Math.min(95,52+Math.sin(S.t/14)*10+(Math.random()*2-1)));
+ // Nivel: baja con consumo, sube si bomba de llenado (simulado por control de nivel)
+ S.level=Math.max(5,Math.min(98,S.level+(S.pump?-0.4:0.55)+(Math.random()*.3-.15)));
+ const quality=(S.temp<-10||S.temp>115)?'bad':'good';
+
+ // --- 2. control automático: histéresis + seguridad ---
+ if(S.emergency){S.pump=false}
+ else if(S.auto){ if(S.temp>80)S.pump=true; else if(S.temp<74)S.pump=false; }
+ else S.pump=S.manualPump;
+ const wasAlarm=S.alarm; S.alarm=S.temp>80 && !S.emergency;
+ if(S.alarm && !wasAlarm && Date.now()-S.lastAlarmAt>8000){
+ S.lastAlarmAt=Date.now(); S.alarmEvents++;
+ log('err',`ALARMA CRÍTICA · Temperatura ${fmt(S.temp)} °C > 80 °C · el sistema de envío notificó (aviso automático)`);
+ toast('🚨 Alarma crítica: temperatura sobre 80 °C');
+ }
+ if(!S.alarm && wasAlarm) log('ok','Alarma normalizada · Temperatura bajo el umbral con histéresis');
+
+ // --- 3. NODE-RED: reintento simulado ---
+ if(Math.random()<0.10){S.retries++;S.nrRetry=S.retries;log('warn',`Backend sin respuesta · Reintento ${1+Math.floor(Math.random()*3)}/3 con backoff exponencial → OK`)}
+ S.nrOk++;
+
+ // --- 4. BACKEND: almacenar ---
+ const row={id:S.readings.length+1,ts:now(),dev:'sensor-tanque-01',temp:S.temp,hum:S.hum,level:S.level,quality};
+ S.readings.push(row); if(S.readings.length>240)S.readings.shift();
+ S.max=Math.max(S.max,S.temp);
+ Object.keys(S.series).forEach(k=>{S.series[k].push(row[k==='temp'?'temp':k]); if(S.series[k].length>56)S.series[k].shift()});
+
+ render(row,quality);
+}
+
+function render(row,quality){
+ $('kTemp').textContent=fmt(S.temp)+' °C'; $('kHum').textContent=fmt(S.hum,0)+' %'; $('kLevel').textContent=fmt(S.level,0)+' %';
+ $('kpiTempCard').classList.toggle('alert',S.alarm);
+ $('kAlarms').textContent=S.alarm?(1):0; $('kAlarmSub').textContent=S.alarm?'Temperatura sobre el umbral':'Eventos críticos totales: '+S.alarmEvents;
+ const arr=S.series.temp, avg=arr.reduce((a,b)=>a+b,0)/arr.length;
+ $('mTemp').textContent=fmt(S.temp)+' °C'; $('mAvg').textContent=fmt(avg)+' °C'; $('mMax').textContent=fmt(S.max)+' °C';
+ $('mPump').innerHTML=S.emergency?'<span class="badge b-bad">DETENIDA · EMERGENCIA</span>':(S.pump?'<span class="badge b-warn">ENCENDIDA</span>':'<span class="badge b-ok">APAGADA</span>');
+ $('mMode').textContent=S.emergency?'Parada de emergencia':(S.auto?'Automático (histéresis)':'Manual');
+ $('mCount').textContent=S.readings.length; $('mRetries').textContent=S.retries;
+ $('mQuality').textContent=quality==='good'?'BUENA':'MALA'; $('mQuality').className='badge '+(quality==='good'?'b-ok':'b-bad');
+ $('lastFrame').textContent=row.ts; $('jsonTemp').textContent=fmt(S.temp,2); $('jsonCal').textContent=fmt(S.cal,1);
+ $('regLevel').textContent=Math.round(S.level*100); $('regPump').textContent=S.pump?1:0; $('regAlarm').textContent=S.alarm?1:0;
+ $('nrOk').textContent=S.nrOk; $('nrLat').textContent=(38+Math.floor(Math.random()*25))+' ms';
+ document.querySelectorAll('[data-lat]').forEach((el,i)=>{const base=[12,8,21,18,240,5][i];el.textContent=base+Math.floor(Math.random()*6)});
+ document.querySelectorAll('#pipeline .step').forEach((el,i)=>{el.classList.toggle('bad',S.emergency&&i<2); el.classList.toggle('warn',S.alarm&&i===3)});
+ const ab=$('alarmBox');
+ if(S.emergency){ab.className='alarmbox bad';ab.textContent='🛑 PARADA DE EMERGENCIA ACTIVA · control automático llevó los actuadores a estado seguro. Pulsa el botón nuevamente para restablecer.'}
+ else if(S.alarm){ab.className='alarmbox bad';ab.textContent='🚨 ALARMA CRÍTICA · Temperatura > 80 °C · el sistema de envío notificó · '+(S.auto?'El control automático activó el enfriamiento automáticamente.':'Modo manual: activa la bomba.')}
+ else{ab.className='alarmbox';ab.textContent='✅ Sistema normal · Umbral térmico: 80 °C · Enfriamiento control automático por encima del umbral.'}
+ // Tabla backend (últimas 8)
+ const tb=$('readingsBody'); const last=S.readings.slice(-8).reverse();
+ tb.innerHTML=last.map(r=>`<tr><td><b>${r.id}</b></td><td>${r.ts}</td><td>${r.dev}</td><td><b>${fmt(r.temp)} °C</b></td><td>${fmt(r.hum,0)} %</td><td>${fmt(r.level,0)} %</td><td><span class="badge ${r.quality==='good'?'b-ok':'b-bad'}">${r.quality}</span></td></tr>`).join('');
+ drawChart();
+}
+
+/* ================= GRÁFICO ================= */
+function drawChart(){
+ const cv=$('chart'),ctx=cv.getContext('2d'),key=S.activeVar,cfg=LIMITS[key],data=S.series[key];
+ const w=cv.width,h=cv.height,p=30;ctx.clearRect(0,0,w,h);
+ ctx.strokeStyle='rgba(71,111,145,.22)';ctx.beginPath();ctx.moveTo(p,8);ctx.lineTo(p,h-p);ctx.lineTo(w-8,h-p);ctx.stroke();
+ ctx.fillStyle='#5b7186';ctx.font='12px system-ui';ctx.fillText(cfg.label,10,18);
+ if(cfg.thr){const y=h-p-(cfg.thr/cfg.max)*(h-2*p);ctx.strokeStyle='rgba(225,29,72,.65)';ctx.setLineDash([6,5]);ctx.beginPath();ctx.moveTo(p,y);ctx.lineTo(w-8,y);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#be123c';ctx.fillText('Umbral 80 °C',w-108,y-7)}
+ if(data.length<2)return;
+ const grad=ctx.createLinearGradient(0,0,0,h);grad.addColorStop(0,cfg.color+'44');grad.addColorStop(1,cfg.color+'00');
+ ctx.beginPath();data.forEach((v,i)=>{const x=p+i/55*(w-p-14),y=h-p-(v/cfg.max)*(h-2*p);i?ctx.lineTo(x,y):ctx.moveTo(x,y)});
+ ctx.strokeStyle=(key==='temp'&&S.alarm)?'#e11d48':cfg.color;ctx.lineWidth=2.5;ctx.stroke();
+ ctx.lineTo(p+(data.length-1)/55*(w-p-14),h-p);ctx.lineTo(p,h-p);ctx.closePath();ctx.fillStyle=grad;ctx.fill();
+}
+
+/* ================= CONTROLES ================= */
+$('btnToggle').onclick=e=>{S.running=!S.running;e.currentTarget.textContent=S.running?'⏸ Pausar adquisición':'▶ Reanudar adquisición';log(S.running?'ok':'warn',S.running?'Adquisición reanudada':'Adquisición pausada por el operador')};
+$('btnSpike').onclick=()=>{S.spike=9;log('warn','Perturbación térmica inyectada (prueba de alarma)');toast('⚠ Pico térmico forzado: observa control automático, el sistema de envío y alarmas')};
+$('btnEmergency').onclick=e=>{S.emergency=!S.emergency;e.currentTarget.classList.toggle('on',S.emergency);e.currentTarget.textContent=S.emergency?'▶ Restablecer sistema':'🛑 Parada de emergencia';log(S.emergency?'err':'ok',S.emergency?'PARADA DE EMERGENCIA ACTIVADA · Estado seguro':'Sistema restablecido por el operador');toast(S.emergency?'🛑 Emergencia activada: actuadores en estado seguro':'✅ Sistema restablecido')};
+$('swAuto').onclick=e=>{S.auto=!S.auto;e.currentTarget.classList.toggle('on',S.auto);$('swPump').style.opacity=S.auto?.45:1;log('ok','control automático en modo '+(S.auto?'AUTOMÁTICO':'MANUAL'))};
+$('swPump').onclick=e=>{if(S.auto){toast('La bomba está gobernada por el control automático en modo automático');return}S.manualPump=!S.manualPump;e.currentTarget.classList.toggle('on',S.manualPump)};
+$('calRange').oninput=e=>{S.cal=parseFloat(e.target.value);$('calVal').textContent=fmt(S.cal)+' °C';log('ok',`Calibración actualizada · offset ${fmt(S.cal)} °C`)};
+document.querySelectorAll('[data-var]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-var]').forEach(x=>x.classList.remove('active'));b.classList.add('active');S.activeVar=b.dataset.var;drawChart()});
+$('btnClear').onclick=()=>{S.readings=[];S.max=-Infinity;log('warn','Historial de lecturas limpiado desde el panel');toast('Historial limpiado')};
+$('btnExport').onclick=()=>{
+ const csv='id,timestamp,device_id,temperature_c,humidity_pct,level_pct,quality\n'+S.readings.map(r=>[r.id,r.ts,r.dev,fmt(r.temp,2),fmt(r.hum,1),fmt(r.level,1),r.quality].join(',')).join('\n');
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='lecturas_iot.csv';a.click();toast('⬇ archivo de tabla exportado con '+S.readings.length+' lecturas');
+};
+
+/* ================= IA: 4 AGENTES ================= */
+function stats(){const a=S.series.temp;if(!a.length)return null;return{cur:a[a.length-1],avg:a.reduce((x,y)=>x+y,0)/a.length,max:Math.max(...a),min:Math.min(...a),n:S.readings.length}}
+function answerFor(q){
+ const st=stats(); if(!st)return'Todavía no hay datos suficientes.';
+ q=q.toLowerCase();
+ if(q.includes('alarma')||q.includes('pico')||q.includes('máxim')||q.includes('maxim'))
+ return `La temperatura máxima registrada es ${fmt(st.max)} °C (umbral: 80 °C). Eventos de alarma en esta sesión: ${S.alarmEvents}. Estado actual: ${S.alarm?'ALARMA ACTIVA — el control automático mantiene el enfriamiento encendido.':'sin alarma activa; el sistema está dentro del rango seguro.'}`;
+ if(q.includes('resumen')||q.includes('proceso')||q.includes('estado'))
+ return `Resumen: temperatura actual ${fmt(st.cur)} °C (promedio ${fmt(st.avg)} °C, máx. ${fmt(st.max)} °C), humedad ${fmt(S.hum,0)} %, nivel ${fmt(S.level,0)} %. Bomba: ${S.pump?'encendida':'apagada'} en modo ${S.auto?'automático':'manual'}. Se almacenaron ${st.n} lecturas y el sistema de envío ejecutó ${S.retries} reintentos. Recomendación: ${S.alarm?'revisar la causa del sobrecalentamiento.':'continuar la operación normal.'}`;
+ return `La temperatura actual es ${fmt(st.cur)} °C, con un promedio de ${fmt(st.avg)} °C en la ventana reciente (mín. ${fmt(st.min)} °C, máx. ${fmt(st.max)} °C). La bomba está ${S.pump?'encendida':'apagada'} y ${S.alarm?'hay una alarma activa.':'no hay alarmas activas.'}`;
+}
+function ask(q){
+ if(!q.trim())return;
+ const chat=$('chat');
+ chat.insertAdjacentHTML('beforeend',`<div class="msg user">${q.replace(/</g,'&lt;')}</div>`);
+ const ids=['analyzer','processor','responder','verifier'];
+ ids.forEach(id=>{const el=$('ag-'+id);el.classList.remove('active','done')});
+ let i=0;
+ const step=()=>{
+ if(i>0)$('ag-'+ids[i-1]).classList.replace('active','done');
+ if(i>=ids.length){
+ const ans=answerFor(q),st=stats();
+ chat.insertAdjacentHTML('beforeend',`<div class="msg ia">${ans}<br><small>✅ <b>Verifier:</b> cifras contrastadas contra ${st?st.n:0} lecturas almacenadas · unidades y umbrales correctos.</small></div>`);
+ chat.scrollTop=chat.scrollHeight; log('ok','el asistente inteligente · Respuesta entregada y verificada'); return;
+ }
+ $('ag-'+ids[i]).classList.add('active'); i++; setTimeout(step,620);
+ }; step();
+}
+$('btnAsk').onclick=()=>{ask($('chatInput').value);$('chatInput').value=''};
+$('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter')$('btnAsk').click()});
+document.querySelectorAll('.qbtn').forEach(b=>b.onclick=()=>ask(b.textContent));
+
+/* ================= ARRANQUE ================= */
+setInterval(()=>{$('clock').textContent='En línea · '+now()},1000);
+for(let i=0;i<26;i++)tick();
+setInterval(tick,800);
+log('ok',' sensor-tanque-01 conectado · calibración aplicada');
+log('ok','el control automático · comunicación interna en línea (puerto 502 simulado)');
+log('ok','el sistema de envío · Flujo de integración activo');
+log('ok','el servidor · POST /api/v1/readings respondiendo 201');
+</script>
+</body>
+</html>
