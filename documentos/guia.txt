@@ -1,0 +1,5 @@
+# Guia de arranque del turno
+
+## Arranque
+
+Al iniciar el turno se verifica la presion del tanque, se enciende la bomba principal y se anota la temperatura inicial en la hoja de control del turno.

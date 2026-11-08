@@ -1,0 +1,1953 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Planta Inteligente API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/salud": {
+      "get": {
+        "tags": [
+          "sistema"
+        ],
+        "summary": "Salud",
+        "operationId": "salud_api_salud_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/estado": {
+      "get": {
+        "tags": [
+          "sistema"
+        ],
+        "summary": "Estado",
+        "operationId": "estado_api_estado_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/eventos": {
+      "get": {
+        "tags": [
+          "sistema"
+        ],
+        "summary": "Eventos",
+        "operationId": "eventos_api_eventos_get",
+        "parameters": [
+          {
+            "name": "limite",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "title": "Limite"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/lecturas": {
+      "post": {
+        "tags": [
+          "lecturas"
+        ],
+        "summary": "Crear Lectura",
+        "operationId": "crear_lectura_api_lecturas_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LecturaIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "lecturas"
+        ],
+        "summary": "Listar Lecturas",
+        "operationId": "listar_lecturas_api_lecturas_get",
+        "parameters": [
+          {
+            "name": "limite",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "title": "Limite"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dispositivos/sincronizar": {
+      "post": {
+        "tags": [
+          "dispositivos"
+        ],
+        "summary": "Sincronizar",
+        "operationId": "sincronizar_api_dispositivos_sincronizar_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SincronizarIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/esp32/anunciar": {
+      "post": {
+        "tags": [
+          "dispositivos"
+        ],
+        "summary": "Anunciar Esp32",
+        "description": "Un ESP32 real llamaría a este endpoint al unirse a la Wi-Fi.",
+        "operationId": "anunciar_esp32_api_esp32_anunciar_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DispositivoIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/esp32/heartbeat": {
+      "post": {
+        "tags": [
+          "dispositivos"
+        ],
+        "summary": "Heartbeat",
+        "operationId": "heartbeat_api_esp32_heartbeat_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DispositivoIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/esp32/conectados": {
+      "get": {
+        "tags": [
+          "dispositivos"
+        ],
+        "summary": "Esp32 Conectados",
+        "operationId": "esp32_conectados_api_esp32_conectados_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dispositivos": {
+      "get": {
+        "tags": [
+          "dispositivos"
+        ],
+        "summary": "Dispositivos",
+        "operationId": "dispositivos_api_dispositivos_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/notificar": {
+      "post": {
+        "tags": [
+          "notificaciones"
+        ],
+        "summary": "Notificar Api",
+        "operationId": "notificar_api_api_notificar_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NotificarIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tareas/qstash": {
+      "post": {
+        "tags": [
+          "notificaciones"
+        ],
+        "summary": "Receptor Qstash",
+        "description": "Destino para QStash cuando no hay Celery.",
+        "operationId": "receptor_qstash_api_tareas_qstash_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/buscar": {
+      "get": {
+        "tags": [
+          "asistente"
+        ],
+        "summary": "Buscar",
+        "description": "Búsqueda web: Tavily primero; si falla o no hay clave, DuckDuckGo.",
+        "operationId": "buscar_api_buscar_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Q"
+            }
+          },
+          {
+            "name": "limite",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 5,
+              "title": "Limite"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/asistente/ver": {
+      "get": {
+        "tags": [
+          "asistente"
+        ],
+        "summary": "Asistente Ver",
+        "description": "Página HTML con el resultado de preguntar a la documentación (pestaña nueva).",
+        "operationId": "asistente_ver_api_asistente_ver_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Q"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rag": {
+      "get": {
+        "tags": [
+          "asistente"
+        ],
+        "summary": "Rag Buscar",
+        "description": "Busca fragmentos relevantes en la documentación del proyecto.",
+        "operationId": "rag_buscar_api_rag_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Q"
+            }
+          },
+          {
+            "name": "k",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 3,
+              "title": "K"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/asistente": {
+      "post": {
+        "tags": [
+          "asistente"
+        ],
+        "summary": "Asistente",
+        "operationId": "asistente_api_asistente_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AsistenteIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/documentos": {
+      "get": {
+        "tags": [
+          "documentos"
+        ],
+        "summary": "Listar Documentos",
+        "operationId": "listar_documentos_api_documentos_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "documentos"
+        ],
+        "summary": "Agregar Documento",
+        "operationId": "agregar_documento_api_documentos_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocumentoIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/documentos/subir": {
+      "post": {
+        "tags": [
+          "documentos"
+        ],
+        "summary": "Subir Documento",
+        "description": "Sube PDF, Word, Excel, CSV, JSON, .md o .txt y lo suma al RAG.",
+        "operationId": "subir_documento_api_documentos_subir_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_subir_documento_api_documentos_subir_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/documentos/{nombre}": {
+      "get": {
+        "tags": [
+          "documentos"
+        ],
+        "summary": "Leer Documento",
+        "description": "Contenido de un documento: vista previa y base para editar.",
+        "operationId": "leer_documento_api_documentos__nombre__get",
+        "parameters": [
+          {
+            "name": "nombre",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Nombre"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "documentos"
+        ],
+        "summary": "Actualizar Documento",
+        "operationId": "actualizar_documento_api_documentos__nombre__put",
+        "parameters": [
+          {
+            "name": "nombre",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Nombre"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocumentoIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "documentos"
+        ],
+        "summary": "Borrar Documento",
+        "operationId": "borrar_documento_api_documentos__nombre__delete",
+        "parameters": [
+          {
+            "name": "nombre",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Nombre"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/documentos/{nombre}/descargar": {
+      "get": {
+        "tags": [
+          "documentos"
+        ],
+        "summary": "Descargar Documento",
+        "description": "Enlace para compartir: descarga el documento en texto (.md).",
+        "operationId": "descargar_documento_api_documentos__nombre__descargar_get",
+        "parameters": [
+          {
+            "name": "nombre",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Nombre"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/documentos/{nombre}/ver": {
+      "get": {
+        "tags": [
+          "documentos"
+        ],
+        "summary": "Ver Documento",
+        "description": "Página HTML del documento: se abre en una pestaña nueva tras cargarlo.",
+        "operationId": "ver_documento_api_documentos__nombre__ver_get",
+        "parameters": [
+          {
+            "name": "nombre",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Nombre"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/documentos/{nombre}/compartir": {
+      "get": {
+        "tags": [
+          "documentos"
+        ],
+        "summary": "Compartir Documento",
+        "description": "Datos para compartir un documento: enlace de descarga directo.",
+        "operationId": "compartir_documento_api_documentos__nombre__compartir_get",
+        "parameters": [
+          {
+            "name": "nombre",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Nombre"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/plc": {
+      "get": {
+        "tags": [
+          "plc"
+        ],
+        "summary": "Listar",
+        "operationId": "listar_api_plc_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "plc"
+        ],
+        "summary": "Agregar",
+        "operationId": "agregar_api_plc_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlcIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/plc/probar": {
+      "post": {
+        "tags": [
+          "plc"
+        ],
+        "summary": "Probar Sin Guardar",
+        "description": "Prueba la conexión con los datos del formulario, sin guardar.",
+        "operationId": "probar_sin_guardar_api_plc_probar_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlcIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/plc/{plc_id}/probar": {
+      "post": {
+        "tags": [
+          "plc"
+        ],
+        "summary": "Probar Guardado",
+        "operationId": "probar_guardado_api_plc__plc_id__probar_post",
+        "parameters": [
+          {
+            "name": "plc_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Plc Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/plc/{plc_id}": {
+      "delete": {
+        "tags": [
+          "plc"
+        ],
+        "summary": "Borrar",
+        "operationId": "borrar_api_plc__plc_id__delete",
+        "parameters": [
+          {
+            "name": "plc_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Plc Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/captura/sensores": {
+      "post": {
+        "tags": [
+          "captura"
+        ],
+        "summary": "Captura Sensores",
+        "operationId": "captura_sensores_api_captura_sensores_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CapturaIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/captura/scada": {
+      "post": {
+        "tags": [
+          "captura"
+        ],
+        "summary": "Captura Scada",
+        "operationId": "captura_scada_api_captura_scada_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CapturaIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/captura/esp32": {
+      "post": {
+        "tags": [
+          "captura"
+        ],
+        "summary": "Captura Esp32",
+        "operationId": "captura_esp32_api_captura_esp32_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CapturaIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/captura/mqtt": {
+      "post": {
+        "tags": [
+          "captura"
+        ],
+        "summary": "Captura Mqtt",
+        "description": "Un mensaje MQTT: payload número o JSON {variable: valor}.",
+        "operationId": "captura_mqtt_api_captura_mqtt_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MqttMsgIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/captura/plc": {
+      "post": {
+        "tags": [
+          "captura"
+        ],
+        "summary": "Captura Plc",
+        "description": "Lee cada PLC conectado y guarda su valor como captura.",
+        "operationId": "captura_plc_api_captura_plc_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/captura/series": {
+      "get": {
+        "tags": [
+          "captura"
+        ],
+        "summary": "Captura Series",
+        "operationId": "captura_series_api_captura_series_get",
+        "parameters": [
+          {
+            "name": "variable",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "temperatura",
+              "title": "Variable"
+            }
+          },
+          {
+            "name": "limite",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "title": "Limite"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/captura/fuentes": {
+      "get": {
+        "tags": [
+          "captura"
+        ],
+        "summary": "Captura Fuentes",
+        "operationId": "captura_fuentes_api_captura_fuentes_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/deteccion/series-demo": {
+      "post": {
+        "tags": [
+          "captura"
+        ],
+        "summary": "Serie Demo",
+        "description": "Genera un historial de ejemplo con anomalías para probar el pipeline.",
+        "operationId": "serie_demo_api_deteccion_series_demo_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/deteccion/analizar": {
+      "post": {
+        "tags": [
+          "captura"
+        ],
+        "summary": "Analizar",
+        "description": "Ejecuta el pipeline completo sobre la ventana reciente de una variable.",
+        "operationId": "analizar_api_deteccion_analizar_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnalisisIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/deteccion/ventana": {
+      "get": {
+        "tags": [
+          "captura"
+        ],
+        "summary": "Ventana Actual",
+        "operationId": "ventana_actual_api_deteccion_ventana_get",
+        "parameters": [
+          {
+            "name": "variable",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "temperatura",
+              "title": "Variable"
+            }
+          },
+          {
+            "name": "ventana",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 30,
+              "title": "Ventana"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alertas": {
+      "get": {
+        "tags": [
+          "captura"
+        ],
+        "summary": "Listar Alertas",
+        "operationId": "listar_alertas_api_alertas_get",
+        "parameters": [
+          {
+            "name": "limite",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 30,
+              "title": "Limite"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alertas/simular": {
+      "post": {
+        "tags": [
+          "captura"
+        ],
+        "summary": "Alerta Simular",
+        "operationId": "alerta_simular_api_alertas_simular_post",
+        "parameters": [
+          {
+            "name": "variable",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "temperatura",
+              "title": "Variable"
+            }
+          },
+          {
+            "name": "severidad",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "media",
+              "title": "Severidad"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alertas/{id}/leer": {
+      "post": {
+        "tags": [
+          "captura"
+        ],
+        "summary": "Alerta Leer",
+        "operationId": "alerta_leer_api_alertas__id__leer_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alertas/metricas": {
+      "get": {
+        "tags": [
+          "captura"
+        ],
+        "summary": "Alertas Metricas",
+        "operationId": "alertas_metricas_api_alertas_metricas_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AnalisisIn": {
+        "properties": {
+          "variable": {
+            "type": "string",
+            "title": "Variable",
+            "default": "temperatura"
+          },
+          "dispositivo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dispositivo"
+          },
+          "ventana": {
+            "type": "integer",
+            "title": "Ventana",
+            "default": 30
+          },
+          "umbral": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Umbral"
+          },
+          "crear_alerta": {
+            "type": "boolean",
+            "title": "Crear Alerta",
+            "default": true
+          }
+        },
+        "type": "object",
+        "title": "AnalisisIn",
+        "description": "Ejecución del pipeline de detección sobre una variable."
+      },
+      "AsistenteIn": {
+        "properties": {
+          "pregunta": {
+            "type": "string",
+            "title": "Pregunta",
+            "default": ""
+          },
+          "web": {
+            "type": "boolean",
+            "title": "Web",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "AsistenteIn"
+      },
+      "Body_subir_documento_api_documentos_subir_post": {
+        "properties": {
+          "archivo": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "Archivo"
+          }
+        },
+        "type": "object",
+        "required": [
+          "archivo"
+        ],
+        "title": "Body_subir_documento_api_documentos_subir_post"
+      },
+      "CapturaIn": {
+        "properties": {
+          "dispositivo": {
+            "type": "string",
+            "title": "Dispositivo",
+            "default": "sensor-scada-01"
+          },
+          "variables": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Variables",
+            "default": {}
+          },
+          "umbrales": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Umbrales",
+            "default": {}
+          }
+        },
+        "type": "object",
+        "title": "CapturaIn",
+        "description": "Captura multivariable desde sensores/SCADA/ESP32."
+      },
+      "DispositivoIn": {
+        "properties": {
+          "chip_id": {
+            "type": "string",
+            "title": "Chip Id"
+          },
+          "nombre": {
+            "type": "string",
+            "title": "Nombre",
+            "default": ""
+          },
+          "tipo": {
+            "type": "string",
+            "title": "Tipo",
+            "default": ""
+          },
+          "wifi": {
+            "type": "string",
+            "title": "Wifi",
+            "default": ""
+          },
+          "ip": {
+            "type": "string",
+            "title": "Ip",
+            "default": ""
+          },
+          "conectado": {
+            "type": "boolean",
+            "title": "Conectado",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "chip_id"
+        ],
+        "title": "DispositivoIn"
+      },
+      "DocumentoIn": {
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "title": "Nombre",
+            "default": ""
+          },
+          "contenido": {
+            "type": "string",
+            "title": "Contenido",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "DocumentoIn"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "LecturaIn": {
+        "properties": {
+          "dispositivo": {
+            "type": "string",
+            "title": "Dispositivo",
+            "default": "sensor-tanque-01"
+          },
+          "temperatura": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperatura"
+          },
+          "humedad": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Humedad"
+          },
+          "nivel": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nivel"
+          }
+        },
+        "type": "object",
+        "title": "LecturaIn"
+      },
+      "MqttMsgIn": {
+        "properties": {
+          "topic": {
+            "type": "string",
+            "title": "Topic",
+            "default": "planta/sensores/scada"
+          },
+          "payload": {
+            "type": "string",
+            "title": "Payload",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "MqttMsgIn",
+        "description": "Mensaje capturado de un tema MQTT."
+      },
+      "NotificarIn": {
+        "properties": {
+          "asunto": {
+            "type": "string",
+            "title": "Asunto",
+            "default": "Aviso de Planta Inteligente"
+          },
+          "mensaje": {
+            "type": "string",
+            "title": "Mensaje",
+            "default": ""
+          },
+          "canales": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Canales",
+            "default": [
+              "gmail",
+              "telegram"
+            ]
+          }
+        },
+        "type": "object",
+        "title": "NotificarIn"
+      },
+      "PlcIn": {
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "title": "Nombre",
+            "default": "PLC principal"
+          },
+          "ip": {
+            "type": "string",
+            "title": "Ip",
+            "default": "192.0.2.10"
+          },
+          "puerto": {
+            "type": "integer",
+            "title": "Puerto",
+            "default": 502
+          },
+          "unidad": {
+            "type": "integer",
+            "title": "Unidad",
+            "default": 1
+          },
+          "direccion": {
+            "type": "integer",
+            "title": "Direccion",
+            "default": 0
+          },
+          "tipo_registro": {
+            "type": "string",
+            "title": "Tipo Registro",
+            "default": "holding"
+          },
+          "intervalo_s": {
+            "type": "integer",
+            "title": "Intervalo S",
+            "default": 5
+          }
+        },
+        "type": "object",
+        "title": "PlcIn"
+      },
+      "SincronizarIn": {
+        "properties": {
+          "dispositivos": {
+            "items": {
+              "$ref": "#/components/schemas/DispositivoIn"
+            },
+            "type": "array",
+            "title": "Dispositivos",
+            "default": []
+          }
+        },
+        "type": "object",
+        "title": "SincronizarIn"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

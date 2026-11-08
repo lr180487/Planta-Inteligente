@@ -1,0 +1,1 @@
+El cambio de filtro de aire se hace con la planta detenida. Primero se bloquea la bomba, luego se retira la tapa del filtro, se cambia el cartucho por uno nuevo y se purga la linea durante un minuto antes de arrancar de nuevo.

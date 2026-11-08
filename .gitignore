@@ -1,0 +1,96 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+wheels/
+pip-wheel-metadata/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+!.env.template
+*.pem
+*.key
+secrets/
+credentials/
+*_secret*
+*_credentials*
+
+# UV / Python tooling
+.python-version
+.uv/
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.dmypy.json
+.pyre/
+
+# Logs and runtime files
+*.log
+logs/
+*.pid
+*.seed
+*.sqlite
+*.sqlite3
+*.db
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Node.js / Node-RED local data
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+.nodered/
+.node-red/
+flows_cred.json
+*_cred.json
+
+# MQTT / certificates / broker runtime data
+mqtt/data/
+mqtt/log/
+mosquitto/data/
+mosquitto/log/
+certs/private/
+certs/*.key
+certs/*.pem
+
+# Database and backups
+backups/
+*.bak
+*.dump
+*.sql.gz
+
+# Test artifacts
+test-results/
+playwright-report/
+coverage/
+
+# Generated artifacts
+artifacts/
+output/
+tmp/
+temp/
