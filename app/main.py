@@ -30,5 +30,5 @@ for _r in (sistema, lecturas, dispositivos, notificaciones, asistente,
     app.include_router(_r.router)
 
 # ----------------------------- frontend -----------------------------
-FRONT = os.path.join(os.path.dirname(__file__), "..", "..", "planta-backend")
+FRONT = os.path.join(os.path.dirname(__file__), "..", "..", "iot-plataforma")
 app.mount("/", StaticFiles(directory=FRONT, html=True), name="frontend")
