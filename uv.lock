@@ -20,6 +20,7 @@ source = { editable = "." }
 dependencies = [
     { name = "alembic" },
     { name = "asyncpg" },
+    { name = "celery", extra = ["redis"] },
     { name = "fastapi" },
     { name = "httpx" },
     { name = "joblib" },
@@ -92,6 +93,7 @@ workers = [
 requires-dist = [
     { name = "alembic", specifier = ">=1.14,<2.0" },
     { name = "asyncpg", specifier = ">=0.30" },
+    { name = "celery", extras = ["redis"], specifier = ">=5.7.0" },
     { name = "celery", extras = ["redis"], marker = "extra == 'all'", specifier = ">=5.4,<6.0" },
     { name = "celery", extras = ["redis"], marker = "extra == 'workers'", specifier = ">=5.4,<6.0" },
     { name = "cryptography", marker = "extra == 'all'", specifier = ">=44" },
