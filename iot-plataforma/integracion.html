@@ -1,4 +1,7 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!DOCTYPE html><html lang="es"><head>
+    <link rel="icon" type="image/png" href="/favicon.png" sizes="32x32">
+    <link rel="apple-touch-icon" href="/favicon.png">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Comunicación de Datos · Planta Inteligente</title><style>
 :root{--bg:#f4f7fb;--card:#fff;--line:#dbe5ef;--text:#0f2237;--muted:#5b7186;--blue:#0284c7;--blue2:#2563eb;--green:#059669;--amber:#d97706;--red:#e11d48;--violet:#7c3aed;--radius:18px;--shadow:0 8px 28px rgba(15,44,74,.06)}
 *{margin:0;padding:0;box-sizing:border-box}body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:radial-gradient(900px 500px at 90% -10%,rgba(2,132,199,.10),transparent 60%),var(--bg);color:var(--text);line-height:1.55}
@@ -72,9 +75,29 @@ footer{border-top:1px solid var(--line);background:#fff}footer .wrap{padding-top
 #loader .ld-pct{font-weight:700;color:#2563eb;font-size:.88rem;font-variant-numeric:tabular-nums;min-width:38px;text-align:right}
 @media (prefers-reduced-motion: reduce){#loader .ld-spin{animation-duration:2.2s}}
 </style>
+
+<style id="agroclima-gear-loader">
+/* Loader AgroClima: engranaje azul animado */
+#loader .ld-logo, #loader .loader-logo {
+  display:grid !important; place-items:center !important; overflow:visible !important;
+  background:transparent !important; background-image:none !important; box-shadow:none !important;
+  border:0 !important;
+}
+#loader .ld-logo img, #loader .loader-logo img {
+  display:block; width:100%; height:100%; object-fit:contain;
+  animation: agroGearSpin 3.2s linear infinite; transform-origin:50% 50%;
+}
+#loader .ld-logo { width:68px; height:68px; border-radius:0 !important; }
+#loader .loader-logo { width:104px; height:104px; border-radius:0 !important; font-size:0 !important; }
+@keyframes agroGearSpin { to { transform:rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  #loader .ld-logo img, #loader .loader-logo img { animation:none; }
+}
+</style>
+
 </head><body>
 <div id="loader" title="Clic para saltar">
-  <div class="ld-wrap"><div class="ld-spin" aria-hidden="true"></div><div class="ld-logo">⚙️</div></div>
+  <div class="ld-wrap"><div class="ld-spin" aria-hidden="true"></div><div class="ld-logo"><img src="loader-gear.png" alt="Engranaje tecnológico AgroClima"></div></div>
   <div class="ld-name">Planta Inteligente</div>
   <div class="ld-txt">Cargando la comunicación de datos…</div>
   <div class="ld-bar-row"><div class="ld-bar"><i id="loadBar"></i></div><span class="ld-pct" id="loadPct">0%</span></div>
